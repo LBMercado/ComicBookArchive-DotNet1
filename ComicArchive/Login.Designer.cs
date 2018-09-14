@@ -49,6 +49,7 @@
             this.btnSignIn.TabIndex = 0;
             this.btnSignIn.Text = "Sign In";
             this.btnSignIn.UseVisualStyleBackColor = true;
+            this.btnSignIn.Click += new System.EventHandler(this.btnSignIn_Click);
             // 
             // btnExit
             // 
@@ -98,6 +99,7 @@
             // 
             this.txtBxPass.Location = new System.Drawing.Point(172, 119);
             this.txtBxPass.Name = "txtBxPass";
+            this.txtBxPass.PasswordChar = '*';
             this.txtBxPass.Size = new System.Drawing.Size(263, 20);
             this.txtBxPass.TabIndex = 7;
             // 
@@ -106,6 +108,7 @@
             this.txtBxConfPw.Enabled = false;
             this.txtBxConfPw.Location = new System.Drawing.Point(172, 173);
             this.txtBxConfPw.Name = "txtBxConfPw";
+            this.txtBxConfPw.PasswordChar = '*';
             this.txtBxConfPw.Size = new System.Drawing.Size(263, 20);
             this.txtBxConfPw.TabIndex = 9;
             this.txtBxConfPw.Visible = false;
