@@ -10,11 +10,11 @@ using System.Windows.Forms;
 
 namespace ComicArchive
 {
-    public partial class MainMenu : Form
+    public partial class ComicView : Form
     {
-        public MainMenu()
+        public ComicView()
         {
             InitializeComponent();
-        }        
+        }
     }
 }
