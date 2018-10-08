@@ -12,9 +12,31 @@ namespace ComicArchive
 {
     public partial class ComicView : Form
     {
-        public ComicView()
+        private ComicReader comReader;
+        public ComicView(string comicPath)
         {
             InitializeComponent();
+            comReader = new ComicReader(comicPath);
+            picBxComicScreen.SizeMode = PictureBoxSizeMode.AutoSize;
+            panelComicScreen.AutoScroll = true;
+            picBxComicScreen.Image = comReader.GetCurrentPage();
+        }
+
+        private void btnFinish_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void btnGoToPrevious_Click(object sender, EventArgs e)
+        {
+            comReader.PreviousPage();
+            picBxComicScreen.Image = comReader.GetCurrentPage();
+        }
+
+        private void btnGoToNext_Click(object sender, EventArgs e)
+        {
+            comReader.NextPage();
+            picBxComicScreen.Image = comReader.GetCurrentPage();
         }
     }
 }

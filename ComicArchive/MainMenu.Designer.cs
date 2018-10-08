@@ -39,9 +39,9 @@
             this.btnSort = new System.Windows.Forms.Button();
             this.txtBxSearch = new System.Windows.Forms.TextBox();
             this.grpBxCategory = new System.Windows.Forms.GroupBox();
-            this.rdBtnTitle = new System.Windows.Forms.RadioButton();
-            this.rdBtnAuthor = new System.Windows.Forms.RadioButton();
             this.rdBtnYear = new System.Windows.Forms.RadioButton();
+            this.rdBtnAuthor = new System.Windows.Forms.RadioButton();
+            this.rdBtnTitle = new System.Windows.Forms.RadioButton();
             this.lblAuthor = new System.Windows.Forms.Label();
             this.lblReleaseDate = new System.Windows.Forms.Label();
             this.lblInfo = new System.Windows.Forms.Label();
@@ -62,8 +62,9 @@
             this.lstBxComics.FormattingEnabled = true;
             this.lstBxComics.Location = new System.Drawing.Point(72, 28);
             this.lstBxComics.Name = "lstBxComics";
-            this.lstBxComics.Size = new System.Drawing.Size(147, 459);
+            this.lstBxComics.Size = new System.Drawing.Size(200, 459);
             this.lstBxComics.TabIndex = 1;
+            this.lstBxComics.DoubleClick += new System.EventHandler(this.lstBxComics_DoubleClick);
             // 
             // lblTitle
             // 
@@ -91,6 +92,7 @@
             this.btnSignOut.TabIndex = 4;
             this.btnSignOut.Text = "Sign Out";
             this.btnSignOut.UseVisualStyleBackColor = true;
+            this.btnSignOut.Click += new System.EventHandler(this.btnSignOut_Click);
             // 
             // btnExit
             // 
@@ -100,6 +102,7 @@
             this.btnExit.TabIndex = 5;
             this.btnExit.Text = "Exit";
             this.btnExit.UseVisualStyleBackColor = true;
+            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
             // 
             // lblNotif
             // 
@@ -147,16 +150,16 @@
             this.grpBxCategory.TabStop = false;
             this.grpBxCategory.Text = "Category";
             // 
-            // rdBtnTitle
+            // rdBtnYear
             // 
-            this.rdBtnTitle.AutoSize = true;
-            this.rdBtnTitle.Location = new System.Drawing.Point(6, 29);
-            this.rdBtnTitle.Name = "rdBtnTitle";
-            this.rdBtnTitle.Size = new System.Drawing.Size(45, 17);
-            this.rdBtnTitle.TabIndex = 11;
-            this.rdBtnTitle.TabStop = true;
-            this.rdBtnTitle.Text = "Title";
-            this.rdBtnTitle.UseVisualStyleBackColor = true;
+            this.rdBtnYear.AutoSize = true;
+            this.rdBtnYear.Location = new System.Drawing.Point(97, 29);
+            this.rdBtnYear.Name = "rdBtnYear";
+            this.rdBtnYear.Size = new System.Drawing.Size(90, 17);
+            this.rdBtnYear.TabIndex = 13;
+            this.rdBtnYear.TabStop = true;
+            this.rdBtnYear.Text = "Release Date";
+            this.rdBtnYear.UseVisualStyleBackColor = true;
             // 
             // rdBtnAuthor
             // 
@@ -169,16 +172,16 @@
             this.rdBtnAuthor.Text = "Author";
             this.rdBtnAuthor.UseVisualStyleBackColor = true;
             // 
-            // rdBtnYear
+            // rdBtnTitle
             // 
-            this.rdBtnYear.AutoSize = true;
-            this.rdBtnYear.Location = new System.Drawing.Point(97, 29);
-            this.rdBtnYear.Name = "rdBtnYear";
-            this.rdBtnYear.Size = new System.Drawing.Size(90, 17);
-            this.rdBtnYear.TabIndex = 13;
-            this.rdBtnYear.TabStop = true;
-            this.rdBtnYear.Text = "Release Date";
-            this.rdBtnYear.UseVisualStyleBackColor = true;
+            this.rdBtnTitle.AutoSize = true;
+            this.rdBtnTitle.Location = new System.Drawing.Point(6, 29);
+            this.rdBtnTitle.Name = "rdBtnTitle";
+            this.rdBtnTitle.Size = new System.Drawing.Size(45, 17);
+            this.rdBtnTitle.TabIndex = 11;
+            this.rdBtnTitle.TabStop = true;
+            this.rdBtnTitle.Text = "Title";
+            this.rdBtnTitle.UseVisualStyleBackColor = true;
             // 
             // lblAuthor
             // 

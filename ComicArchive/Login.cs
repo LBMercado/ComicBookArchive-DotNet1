@@ -109,7 +109,9 @@ namespace ComicArchive
                 }
 
                 //Instantiate the MainMenu
-
+                MainMenu ui_main = new MainMenu(this);
+                this.Hide();
+                ui_main.Show();
             }
             //Sign Up
             else
