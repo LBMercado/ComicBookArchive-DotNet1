@@ -45,6 +45,7 @@
             this.lblAuthor = new System.Windows.Forms.Label();
             this.lblReleaseDate = new System.Windows.Forms.Label();
             this.lblInfo = new System.Windows.Forms.Label();
+            this.btnClearCache = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.picBxComicFront)).BeginInit();
             this.grpBxCategory.SuspendLayout();
             this.SuspendLayout();
@@ -211,11 +212,22 @@
             this.lblInfo.TabIndex = 13;
             this.lblInfo.Text = "Double click on a comic in the comic list to begin reading.";
             // 
+            // btnClearCache
+            // 
+            this.btnClearCache.Location = new System.Drawing.Point(810, 636);
+            this.btnClearCache.Name = "btnClearCache";
+            this.btnClearCache.Size = new System.Drawing.Size(75, 23);
+            this.btnClearCache.TabIndex = 14;
+            this.btnClearCache.Text = "Clear Cache";
+            this.btnClearCache.UseVisualStyleBackColor = true;
+            this.btnClearCache.Click += new System.EventHandler(this.btnClearCache_Click);
+            // 
             // MainMenu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(974, 722);
+            this.Controls.Add(this.btnClearCache);
             this.Controls.Add(this.lblInfo);
             this.Controls.Add(this.lblReleaseDate);
             this.Controls.Add(this.lblAuthor);
@@ -231,7 +243,9 @@
             this.Controls.Add(this.lstBxComics);
             this.Controls.Add(this.picBxComicFront);
             this.Name = "MainMenu";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Comic Archive";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainMenu_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.picBxComicFront)).EndInit();
             this.grpBxCategory.ResumeLayout(false);
             this.grpBxCategory.PerformLayout();
@@ -259,6 +273,7 @@
         private System.Windows.Forms.Label lblAuthor;
         private System.Windows.Forms.Label lblReleaseDate;
         private System.Windows.Forms.Label lblInfo;
+        private System.Windows.Forms.Button btnClearCache;
     }
 }
 

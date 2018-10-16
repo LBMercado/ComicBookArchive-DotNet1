@@ -102,6 +102,7 @@
             this.txtBxPass.PasswordChar = '*';
             this.txtBxPass.Size = new System.Drawing.Size(263, 20);
             this.txtBxPass.TabIndex = 7;
+            this.txtBxPass.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtBxPass_KeyDown);
             // 
             // txtBxConfPw
             // 
@@ -112,6 +113,7 @@
             this.txtBxConfPw.Size = new System.Drawing.Size(263, 20);
             this.txtBxConfPw.TabIndex = 9;
             this.txtBxConfPw.Visible = false;
+            this.txtBxConfPw.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtBxConfPw_KeyDown);
             // 
             // lblConfPw
             // 
@@ -161,6 +163,7 @@
             this.Controls.Add(this.btnExit);
             this.Controls.Add(this.btnSignIn);
             this.Name = "Login";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Login";
             this.ResumeLayout(false);
             this.PerformLayout();

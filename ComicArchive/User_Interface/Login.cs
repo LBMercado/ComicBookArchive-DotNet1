@@ -3,18 +3,24 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace ComicArchive
 {
     public partial class Login : Form
     {
+        //data members
+        Data_Access.AccountAccess acctAcc;
+
         public Login()
         {
             InitializeComponent();
+            acctAcc = new Data_Access.AccountAccess("accounts.xml");
         }
 
         public static bool ValidateInput(string usern, string passw)
@@ -80,13 +86,11 @@ namespace ComicArchive
 
         private void btnSignIn_Click(object sender, EventArgs e)
         {
-            string accountPath = "accounts.xml";
             string userName = txtBxUser.Text;
             string passWord = txtBxPass.Text;
             string confPW = txtBxConfPw.Text;
 
-            AccountAccess acctAcc = new AccountAccess(accountPath, userName, passWord);
-            acctAcc.CreateDatPath();
+            acctAcc.SetAccount(userName, passWord);
 
             //Check first if input is valid
             if (!ValidateInput(userName, passWord))
@@ -98,20 +102,42 @@ namespace ComicArchive
             if (btnSignIn.Text == "Sign In")
             {
                 //Verify login details
-                if (acctAcc.AccountExists())
+                if (acctAcc.IsValidAccount())
                 {
-                    MessageBox.Show("Login success!", "Login", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    //distinguish between user and admin account,
+                    //start with user account first
+                    var account = acctAcc.GetUserAccount();
+                    if (account == null)
+                    {
+                        //get admin account
+                        account = acctAcc.GetAdminAccount();
+
+                        if (account == null)
+                        {
+                            Exception exc = new Exception("Unknown error encountered. Unable to get account of User/Admin.");
+                            throw exc;
+                        }
+                        MessageBox.Show("Admin verified, welcome " + account.Username + '!', "Login", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        //admin window here
+                    }
+                    else
+                    {
+                        MessageBox.Show("Login success!", "Login", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        //Instantiate the MainMenu
+                        MainMenu ui_main = new MainMenu(this);
+                        this.Hide();
+                        ui_main.Show();
+                    }
                 }
                 //If no match, inform user
                 else
                 {
                     MessageBox.Show("Incorrect username or password entered.", "Login", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtBxPass.Focus();
+                    txtBxPass.SelectAll();
                 }
-
-                //Instantiate the MainMenu
-                MainMenu ui_main = new MainMenu(this);
-                this.Hide();
-                ui_main.Show();
             }
             //Sign Up
             else
@@ -120,16 +146,22 @@ namespace ComicArchive
                 if (acctAcc.AccountExists())
                 {
                     MessageBox.Show("Username is already used. Please enter a new one.", "Sign Up", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    txtBxUser.Focus();
+                    txtBxUser.SelectAll();
+                    return;
                 }
-                if (confPW != passWord)
+                else if (confPW != passWord)
                 {
                     MessageBox.Show("Passwords don't match.", "Login", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    txtBxConfPw.ResetText();
+                    txtBxPass.Focus();
+                    txtBxPass.SelectAll();
                     return;
                 }
                 //If no match, create account and inform user
                 else
                 {
-                    acctAcc.WriteAccount();
+                    acctAcc.WriteUserAccount();
                     MessageBox.Show("Account creation success!", "Sign Up", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     txtBxPass.ResetText();
                     txtBxPass.Focus();
@@ -143,6 +175,22 @@ namespace ComicArchive
                     txtBxConfPw.Enabled = false;
                     txtBxConfPw.Visible = false;
                 }
+            }
+        }
+
+        private void txtBxPass_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (lblConfPw.Visible == false && e.KeyCode == Keys.Enter)
+            {
+                btnSignIn_Click(this, new EventArgs());
+            }
+        }
+
+        private void txtBxConfPw_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (lblConfPw.Visible == true && e.KeyCode == Keys.Enter)
+            {
+                btnSignIn_Click(this, new EventArgs());
             }
         }
     }

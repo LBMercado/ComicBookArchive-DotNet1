@@ -16,10 +16,10 @@ namespace ComicArchive
         //data members
         private Login ui_login;
         private List<FileInfo> comicInfo;
+        private bool signOutEvent = false;
 
         public MainMenu(Login ui_Login)
         {
-            FileInfo testComic;
             this.ui_login = ui_Login;
             InitializeComponent();
             //load cbzs/cbrs from archive
@@ -54,6 +54,7 @@ namespace ComicArchive
 
         private void btnSignOut_Click(object sender, EventArgs e)
         {
+            signOutEvent = true;
             ui_login.Show();
             this.Close();
         }
@@ -61,6 +62,18 @@ namespace ComicArchive
         private void btnExit_Click(object sender, EventArgs e)
         {
             ui_login.Close();
+        }
+
+        private void MainMenu_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (!signOutEvent)
+                ui_login.Close();
+        }
+
+        private void btnClearCache_Click(object sender, EventArgs e)
+        {
+            new ComicReader().ClearCache();
+            MessageBox.Show("Cache cleared!", "Notice", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
         }
     }
 }

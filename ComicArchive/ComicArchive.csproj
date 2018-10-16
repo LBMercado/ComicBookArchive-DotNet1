@@ -48,35 +48,48 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ComicReader.cs" />
-    <Compile Include="ComicView.cs">
+    <Compile Include="Business_Logic\Admin.cs" />
+    <Compile Include="Business_Logic\ComicBook.cs" />
+    <Compile Include="Data_Access\AccountAccess.cs" />
+    <Compile Include="User_Interface\ProgressDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ComicView.Designer.cs">
+    <Compile Include="User_Interface\ProgressDialog.Designer.cs">
+      <DependentUpon>ProgressDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Data_Access\ComicReader.cs" />
+    <Compile Include="User_Interface\ComicView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="User_Interface\ComicView.Designer.cs">
       <DependentUpon>ComicView.cs</DependentUpon>
     </Compile>
-    <Compile Include="DataAccess.cs" />
-    <Compile Include="Login.cs">
+    <Compile Include="Data_Access\DataAccess.cs" />
+    <Compile Include="User_Interface\Login.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Login.Designer.cs">
+    <Compile Include="User_Interface\Login.Designer.cs">
       <DependentUpon>Login.cs</DependentUpon>
     </Compile>
-    <Compile Include="MainMenu.cs">
+    <Compile Include="User_Interface\MainMenu.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainMenu.Designer.cs">
+    <Compile Include="User_Interface\MainMenu.Designer.cs">
       <DependentUpon>MainMenu.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="ComicView.resx">
+    <Compile Include="Business_Logic\User.cs" />
+    <EmbeddedResource Include="User_Interface\ProgressDialog.resx">
+      <DependentUpon>ProgressDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="User_Interface\ComicView.resx">
       <DependentUpon>ComicView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Login.resx">
+    <EmbeddedResource Include="User_Interface\Login.resx">
       <DependentUpon>Login.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MainMenu.resx">
+    <EmbeddedResource Include="User_Interface\MainMenu.resx">
       <DependentUpon>MainMenu.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -88,6 +101,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="ComicArchive.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -97,6 +111,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Resources\comicbooks\Custom Sony Pictures 2018 Venom English Comic 001 %282018%29 %28c2c%29 %28Spider-Borg%29.cbz">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\comicbooks\The Walking Dead 176 %282018%29 GetComics.INFO.cbr">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -109,5 +129,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
