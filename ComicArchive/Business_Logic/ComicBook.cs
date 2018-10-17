@@ -10,16 +10,22 @@ namespace ComicArchive.Business_Logic
     /// <summary>
     /// access a comic book directory
     /// </summary>
-    class ComicBook
+    public class ComicBook
     {
         //data members
         private string[] pagePath; //paths of each page image in comic, sorted in order based on page number
         private string comicPath; //path of the comic book directory
+        private string archivePath; //path to the .cbz/.cbr comic book
 
         public ComicBook()
         {
-            comicPath = ComicTitle = ComicSubTitle = ComicIssue = "";
-            PageCount = 0;
+            //set data members
+            archivePath = comicPath = ComicTitle = ComicSubTitle = ComicIssue = "";
+            ComicDateAdded = ComicDateReleased = DateTime.Now;
+            Publisher = ComicSynopsis = ComicGenre = "";
+            ComicAuthors = null;
+            AvgRating = 0.0F;
+            ViewCount = PageCount = 0;
         }
 
         /// <summary>
@@ -110,8 +116,19 @@ namespace ComicArchive.Business_Logic
             SetPagePaths(fileList);
         }
 
+        public void SetArchivePath(string archivePath)
+        {
+            if (File.Exists(archivePath))
+                this.archivePath = archivePath;
+            else
+            {
+                FileNotFoundException exc = new FileNotFoundException("Archive path set for comic book: <" + archivePath + "> is invalid.");
+                throw exc;
+            }
+        }
+
         /// <summary>
-        /// get the path to the comic archive
+        /// get the path to the comic directory
         /// </summary>
         /// <returns>
         /// empty string if not set, otherwise the path
@@ -119,6 +136,17 @@ namespace ComicArchive.Business_Logic
         public string GetComicPath()
         {
             return comicPath;
+        }
+
+        /// <summary>
+        /// get the path to the comic archive
+        /// </summary>
+        /// <returns>
+        /// empty string if not set, otherwise the path
+        /// </returns>
+        public string GetArchivePath()
+        {
+            return archivePath;
         }
 
         /// <summary>
@@ -137,6 +165,46 @@ namespace ComicArchive.Business_Logic
         public string ComicIssue { get; set; }
 
         /// <summary>
+        /// the date that the comic book was added to the application
+        /// </summary>
+        public DateTime ComicDateAdded { get; set; }
+
+        /// <summary>
+        /// the actual date that the comic book was released
+        /// </summary>
+        public DateTime ComicDateReleased { get; set; }
+
+        /// <summary>
+        /// synopsis or short summary of the comic's plot
+        /// </summary>
+        public string ComicSynopsis { get; set; }
+
+        /// <summary>
+        /// author/s of the comic book
+        /// </summary>
+        public string[] ComicAuthors { get; set; }
+
+        /// <summary>
+        /// genre that the comic book belongs
+        /// </summary>
+        public string ComicGenre { get; set; }
+
+        /// <summary>
+        /// average rating of the comic book
+        /// </summary>
+        public float AvgRating { get; set; }
+
+        /// <summary>
+        /// number of user views on this comic book
+        /// </summary>
+        public int ViewCount { get; set; }
+
+        /// <summary>
+        /// publisher of the comic book
+        /// </summary>
+        public string Publisher { get; set; }
+
+        /// <summary>
         /// get number of pages of the comic book
         /// </summary>
         public int PageCount { get; private set; }
@@ -152,42 +220,27 @@ namespace ComicArchive.Business_Logic
         }
     }
 
+    //START
+    //custom defined exception classes for easier debugging
     public class InvalidImage : Exception
     {
-        public InvalidImage()
-        {
-
-        }
+        public InvalidImage() { }
         public InvalidImage(string message)
-        : base(message)
-        {
-
-        }
+        : base(message) { }
     }
 
     public class InvalidComicArchive : Exception
     {
-        public InvalidComicArchive()
-        {
-
-        }
+        public InvalidComicArchive() { }
         public InvalidComicArchive(string message)
-        : base(message)
-        {
-
-        }
+        : base(message) { }
     }
 
     public class ComicArchivePagePathsNotSet : Exception
     {
-        public ComicArchivePagePathsNotSet()
-        {
-
-        }
+        public ComicArchivePagePathsNotSet() { }
         public ComicArchivePagePathsNotSet(string message)
-        : base(message)
-        {
-
-        }
+        : base(message) { }
     }
+    //END
 }

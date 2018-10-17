@@ -11,7 +11,7 @@ using ComicArchive.Business_Logic;
 
 namespace ComicArchive.Data_Access
 {
-    class AccountAccess : DataAccess
+    public class AccountAccess : DataAccess
     {
         //Specialized class for accessing XML accounts
         //May include: account access, modification, verification, and encryption properties
@@ -318,6 +318,7 @@ namespace ComicArchive.Data_Access
                     {
                         //Account is existing
                         account.Element("Password").Value = password;
+                        xDocument.Save(filePath);
                         return;
                     }
                 }
@@ -368,6 +369,7 @@ namespace ComicArchive.Data_Access
                     {
                         //Account is existing
                         account.Element("Password").Value = password;
+                        xDocument.Save(filePath);
                         return;
                     }
                 }
@@ -401,6 +403,109 @@ namespace ComicArchive.Data_Access
         }
 
         /// <summary>
+        /// Removes the set user account from the XML accounts file.
+        /// </summary>
+        /// <returns>
+        /// true if successful, false otherwise
+        /// </returns>
+        /// <exception cref="FileNotFoundException"></exception>
+        public bool RemoveAccount()
+        {
+            if (PathIsValid())
+            {
+                //delete only if valid credentials
+                if (IsValidAccount())
+                {
+                    XDocument xDocument = XDocument.Load(filePath);
+
+                    foreach (XElement account in xDocument.Descendants("Account"))
+                    {
+                        //get required elements
+                        XElement userNameRead = account.Element("Username");
+                        XElement idRead = account.Element("ID");
+
+                        if (userNameRead.Value == username)
+                        {
+                            //remove top node <Account> that has this username
+                            account.Remove();
+                            xDocument.Save(filePath);
+
+                            //check if admin or user, decrement accordingly
+                            //check if id does not have 1000 as its first 4 digits
+                            //the 1000 indicates an admin, any other will be a user
+                            if (idRead.Value.Substring(0, 4) == "1000")
+                            {
+                                AdminCount--;
+                            }
+                            else
+                            {
+                                UserCount--;
+                            }
+                            Count--;
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+                else
+                    return false;
+            }
+            else
+            {
+                Trace.WriteLine("Set Path = " + "<" + filePath + ">" + " is invalid. Cannot proceed with account removal.");
+                FileNotFoundException exc = new FileNotFoundException
+                    (
+                    "Set Path = " + "<" + filePath + ">" + " is invalid or set account does not exist.\nCannot proceed with account removal."
+                    );
+                throw exc;
+            }
+        }
+
+        /// <summary>
+        /// updates the user account associated with the given ID in the XML accounts file using the set account
+        /// </summary>
+        /// <param name="userId">
+        /// id of the user to update
+        /// </param>
+        /// <returns>
+        /// true if successful, false otherwise
+        /// </returns>
+        public bool UpdateAccount(int userId)
+        {
+            if (PathIsValid())
+            {
+                XDocument xDocument = XDocument.Load(filePath);
+
+                foreach (XElement account in xDocument.Descendants("Account"))
+                {
+                    //get required elements
+                    XElement userNameRead = account.Element("Username");
+                    XElement passWordRead = account.Element("Password");
+                    XElement idRead = account.Element("ID");
+
+                    //update account username and password with same userId
+                    if (idRead.Value == userId.ToString())
+                    {
+                        userNameRead.Value = username;
+                        passWordRead.Value = password;
+                        xDocument.Save(filePath);
+                        return true;
+                    }
+                }
+                return false;
+            }
+            else
+            {
+                Trace.WriteLine("Set Path = " + "<" + filePath + ">" + " is invalid. Cannot proceed with account removal.");
+                FileNotFoundException exc = new FileNotFoundException
+                    (
+                    "Set Path = " + "<" + filePath + ">" + " is invalid or set account does not exist.\nCannot proceed with account removal."
+                    );
+                throw exc;
+            }
+        }
+
+        /// <summary>
         /// This creates the super admin within the accounts file.
         /// </summary>
         private void CreateSuperAdmin()
@@ -414,6 +519,98 @@ namespace ComicArchive.Data_Access
 
             username = oldUsername;
             password = oldPassword;
+        }
+
+        /// <summary>
+        /// reads the user accounts from the accounts XML file
+        /// </summary>
+        /// <returns>
+        /// array of User objects
+        /// </returns>
+        public User[] GetAllUserAccounts()
+        {
+            if (PathIsValid())
+            {
+                XDocument xDocument = XDocument.Load(filePath);
+                User[] userList = new User[UserCount];
+                int index = 0;
+
+                foreach (XElement account in xDocument.Descendants("Account"))
+                {
+                    //get required elements
+                    XElement idRead = account.Element("ID");
+                    XElement userNameRead = account.Element("Username");
+                    XElement passWordRead = account.Element("Password");
+
+                    //check if id does not have 1000 as its first 4 digits
+                    //the 1000 indicates an admin, any other will be a user
+                    if (idRead.Value.Substring(0, 4) != "1000")
+                    {
+                        userList[index] = new User(Convert.ToInt32(idRead.Value));
+                        {
+                            userList[index].Username = userNameRead.Value;
+                            userList[index].Password = passWordRead.Value;
+                        }
+                        index++;
+                    }
+                }
+                return userList;
+            }
+            else
+            {
+                Trace.WriteLine("Set Path = " + "<" + filePath + ">" + " is invalid, cannot proceed with account access.");
+                FileNotFoundException exc = new FileNotFoundException
+                    (
+                    "Set Path = " + "<" + filePath + ">" + " is invalid, cannot proceed with account access."
+                    );
+                throw exc;
+            }
+        }
+
+        /// <summary>
+        /// reads the admin accounts from the accounts XML file
+        /// </summary>
+        /// <returns>
+        /// array of Admin objects
+        /// </returns>
+        public Admin[] GetAllAdminAccounts()
+        {
+            if (PathIsValid())
+            {
+                XDocument xDocument = XDocument.Load(filePath);
+                Admin[] adminList = new Admin[AdminCount];
+                int index = 0;
+
+                foreach (XElement account in xDocument.Descendants("Account"))
+                {
+                    //get required elements
+                    XElement idRead = account.Element("ID");
+                    XElement userNameRead = account.Element("Username");
+                    XElement passWordRead = account.Element("Password");
+
+                    //check if id has 1000 as its first 4 digits
+                    //the 1000 indicates an admin, any other will be a user
+                    if (idRead.Value.Substring(0, 4) == "1000")
+                    {
+                        adminList[index] = new Admin(Convert.ToInt32(idRead.Value));
+                        {
+                            adminList[index].Username = userNameRead.Value;
+                            adminList[index].Password = passWordRead.Value;
+                        }
+                        index++;
+                    }
+                }
+                return adminList;
+            }
+            else
+            {
+                Trace.WriteLine("Set Path = " + "<" + filePath + ">" + " is invalid, cannot proceed with account access.");
+                FileNotFoundException exc = new FileNotFoundException
+                    (
+                    "Set Path = " + "<" + filePath + ">" + " is invalid, cannot proceed with account access."
+                    );
+                throw exc;
+            }
         }
 
         /// <summary>

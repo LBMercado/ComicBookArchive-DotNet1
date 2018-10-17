@@ -55,6 +55,9 @@
             this.ClientSize = new System.Drawing.Size(403, 132);
             this.Controls.Add(this.lbl_info);
             this.Controls.Add(this.loadProgBar);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "ProgressDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Loading...";

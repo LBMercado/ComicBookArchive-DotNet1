@@ -6,20 +6,19 @@ using System.Threading.Tasks;
 
 namespace ComicArchive.Business_Logic
 {
-    class User
+    public class User
     {
-        protected bool isAdmin;
 
         public User(int id)
         {
             Id = id;
-            isAdmin = false;
+            IsAdmin = false;
         }
 
         public string Username { get; set; }
         public string Password { get; set; }
         public int Id { get; }
 
-        public bool IsAdmin { get; }
+        public bool IsAdmin { get; protected set; }
     }
 }

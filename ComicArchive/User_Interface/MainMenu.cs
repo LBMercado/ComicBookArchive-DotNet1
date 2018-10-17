@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ComicArchive.Data_Access;
 
 namespace ComicArchive
 {
@@ -16,7 +17,6 @@ namespace ComicArchive
         //data members
         private Login ui_login;
         private List<FileInfo> comicInfo;
-        private bool signOutEvent = false;
 
         public MainMenu(Login ui_Login)
         {
@@ -54,7 +54,6 @@ namespace ComicArchive
 
         private void btnSignOut_Click(object sender, EventArgs e)
         {
-            signOutEvent = true;
             ui_login.Show();
             this.Close();
         }
@@ -66,7 +65,7 @@ namespace ComicArchive
 
         private void MainMenu_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (!signOutEvent)
+            if (!ui_login.Visible)
                 ui_login.Close();
         }
 

@@ -8,9 +8,9 @@ using System.Security.Cryptography;
 using System.Xml.Linq;
 using System.Diagnostics;
 
-namespace ComicArchive
+namespace ComicArchive.Data_Access
 {
-    class DataAccess
+    public class DataAccess
     {
         //General class for setting XML files
 
@@ -88,11 +88,8 @@ namespace ComicArchive
             XDocument xdocument;
             Directory.CreateDirectory(root);
 
-            if (!PathIsValid())
-            {
-                xdocument = new XDocument(new XElement("Accounts"));
-                xdocument.Save(filePath);
-            }
+            xdocument = new XDocument(new XElement("Accounts"));
+            xdocument.Save(filePath);
         }
     }
 }

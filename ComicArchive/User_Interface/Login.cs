@@ -16,11 +16,12 @@ namespace ComicArchive
     {
         //data members
         Data_Access.AccountAccess acctAcc;
+        private const string accountFileName = "accounts.xml";
 
         public Login()
         {
             InitializeComponent();
-            acctAcc = new Data_Access.AccountAccess("accounts.xml");
+            acctAcc = new Data_Access.AccountAccess(accountFileName);
         }
 
         public static bool ValidateInput(string usern, string passw)
@@ -86,9 +87,9 @@ namespace ComicArchive
 
         private void btnSignIn_Click(object sender, EventArgs e)
         {
-            string userName = txtBxUser.Text;
-            string passWord = txtBxPass.Text;
-            string confPW = txtBxConfPw.Text;
+            string userName = txtBxUser.Text.Trim();
+            string passWord = txtBxPass.Text.Trim();
+            string confPW = txtBxConfPw.Text.Trim();
 
             acctAcc.SetAccount(userName, passWord);
 
@@ -110,16 +111,21 @@ namespace ComicArchive
                     if (account == null)
                     {
                         //get admin account
-                        account = acctAcc.GetAdminAccount();
+                        var adminAccount = acctAcc.GetAdminAccount();
 
-                        if (account == null)
+                        if (adminAccount == null)
                         {
                             Exception exc = new Exception("Unknown error encountered. Unable to get account of User/Admin.");
                             throw exc;
                         }
-                        MessageBox.Show("Admin verified, welcome " + account.Username + '!', "Login", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("Admin verified, welcome " + adminAccount.Username + '!', "Login", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         //admin window here
+                        User_Interface.Admin ui_admin = new User_Interface.Admin(this, adminAccount);
+                        txtBxUser.ResetText();
+                        txtBxPass.ResetText();
+                        this.Hide();
+                        ui_admin.Show();
                     }
                     else
                     {
@@ -127,6 +133,8 @@ namespace ComicArchive
 
                         //Instantiate the MainMenu
                         MainMenu ui_main = new MainMenu(this);
+                        txtBxUser.ResetText();
+                        txtBxPass.ResetText();
                         this.Hide();
                         ui_main.Show();
                     }

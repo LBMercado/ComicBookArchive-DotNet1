@@ -10,9 +10,12 @@ using System.Windows.Forms;
 using SevenZip;
 using ComicArchive.Business_Logic;
 
-namespace ComicArchive
+namespace ComicArchive.Data_Access
 {
-    class ComicReader
+    /// <summary>
+    /// provides a means of accessing and reading comic books via user interface
+    /// </summary>
+    public class ComicReader
     {
         //data members
         private ComicBook comicBook;
@@ -22,13 +25,13 @@ namespace ComicArchive
         //NOTE: current page IS NOT array index, subtract 1 to make it array-compatible
 
         /// <summary>
-        /// Initialize a comic reader, opens the file on demand
+        /// initialize a comic reader, opens the file on demand
         /// </summary>
         /// <param name="comicPath">
-        /// The directory/path where the comic is found
+        /// the directory/path where the comic is found
         /// </param>
         /// <param name="tempPath">
-        /// Temporary storage for extracted files from the comic
+        /// temporary storage for extracted files from the comic
         /// </param>
         public ComicReader(string comicPath = "", string tempPath = "temp")
         {
