@@ -37,6 +37,10 @@ namespace ComicArchive.User_Interface
             accountReader = new AccountAccess(accountFileName);
             comicReader = new ComicAccess(cbRecordsFileName);
 
+            string comicArchiveDir = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "comicbooks");
+            //create resource directory, as assurance
+            Directory.CreateDirectory(comicArchiveDir);
+
             //fill the listViewUserList with user names
             //filter list by id by default
             adminAccts = accountReader.GetAllAdminAccounts();
@@ -481,36 +485,18 @@ namespace ComicArchive.User_Interface
             Directory.CreateDirectory(comicArchiveDir);
 
             //copy each archive to resources folder
-            //create a comic book records instance for each archive path
+            //intitialize a comic book record for each archive path
             List<Business_Logic.ComicBook> comicBookList = new List<Business_Logic.ComicBook>();
             foreach (var path in archivePaths)
             {
                 string copiedCbPath = Path.Combine(comicArchiveDir, Path.GetFileName(path));
                 if (!File.Exists(copiedCbPath))
                     File.Copy(path, copiedCbPath);
-                Business_Logic.ComicBook newComicBook = new Business_Logic.ComicBook();
-                newComicBook.SetArchivePath(copiedCbPath);
-                newComicBook.ComicTitle = Path.GetFileNameWithoutExtension(path);
-                newComicBook.ComicSubTitle = "";
-                newComicBook.ComicIssue = "";
-                newComicBook.ComicDateAdded = DateTime.Now;
-                newComicBook.ComicDateReleased = DateTime.Now;
-                newComicBook.ComicSynopsis = "";
-                newComicBook.ComicGenre = "";
-                newComicBook.Publisher = "";
-                newComicBook.AvgRating = 0;
-                newComicBook.ViewCount = 0;
-                comicBookList.Add(newComicBook);
+                comicReader.InitializeNewComicBook(copiedCbPath);
             }
 
-            //write records to XML file
-            foreach (Business_Logic.ComicBook book in comicBookList)
-            {
-                comicReader.WriteComicBookRecord(book);
-            }
             //update listViewAvailableComics
             lstViewAvailableComics_Refresh();
-
         }
 
         /// <summary>
