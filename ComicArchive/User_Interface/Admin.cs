@@ -22,6 +22,7 @@ namespace ComicArchive.User_Interface
         private ComicAccess comicReader;
         private Business_Logic.Admin[] adminAccts;
         private Business_Logic.User[] userAccts;
+        private Business_Logic.ComicBook[] comicBooks;
         private const string accountFileName = "accounts.xml";
         private const string cbRecordsFileName = "cbInfo.xml";
 
@@ -29,25 +30,27 @@ namespace ComicArchive.User_Interface
         {
             InitializeComponent();
 
+            //set data members
             this.ui_login = ui_login;
             this.loggedAdmin = admin;
             lblAdminName.Text = admin.Username;
-            tbCtrlSearch_HideTabPages();
-            tbCtrlSearch_ShowTabPageUser();
             accountReader = new AccountAccess(accountFileName);
             comicReader = new ComicAccess(cbRecordsFileName);
 
-            string comicArchiveDir = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "comicbooks");
-            //create resource directory, as assurance
-            Directory.CreateDirectory(comicArchiveDir);
+            //ui setup
+            tbCtrlSearch_HideTabPages();
+            txtBxDateAdded.ReadOnly = true;
 
-            //fill the listViewUserList with user names
-            //filter list by id by default
+            //users tab
             adminAccts = accountReader.GetAllAdminAccounts();
             userAccts = accountReader.GetAllUserAccounts();
             lblUserCount.Text += accountReader.Count.ToString();
-            rdBtnSearchById.Checked = true;
-            txtBxDateAdded.ReadOnly = true;
+            tbCtrlSearch_ShowTabPageUser();
+
+            //comics tab
+            string comicArchiveDir = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "comicbooks");
+            //create resource directory, as assurance
+            Directory.CreateDirectory(comicArchiveDir);
             lstViewAvailableComics_Refresh();
         }
 
@@ -175,7 +178,12 @@ namespace ComicArchive.User_Interface
         private void tbCtrlSearch_ShowTabPageUser()
         {
             if (!tbCtrlSearch.TabPages.Contains(tbPgSearchUser))
+            {
                 tbCtrlSearch.TabPages.Add(tbPgSearchUser);
+                rdBtnSearchById.Checked = true;
+                chkBxSearchUserMatchCase.Checked = false;
+            }
+                
             if (tbCtrlSearch.TabPages.Contains(tbPgSearchComic))
                 tbCtrlSearch.TabPages.Remove(tbPgSearchComic);
         }
@@ -183,7 +191,13 @@ namespace ComicArchive.User_Interface
         private void tbCtrlSearch_ShowTabPageComic()
         {
             if (!tbCtrlSearch.TabPages.Contains(tbPgSearchComic))
+            {
                 tbCtrlSearch.TabPages.Add(tbPgSearchComic);
+                rdBtnComicHeaders.Checked = true;
+                chkBxSearchComicMatchCase.Checked = false;
+                rdBtnSortDateAdded.Checked = true;
+            }
+                
             if (tbCtrlSearch.TabPages.Contains(tbPgSearchUser))
                 tbCtrlSearch.TabPages.Remove(tbPgSearchUser);
         }
@@ -504,13 +518,207 @@ namespace ComicArchive.User_Interface
         /// </summary>
         private void lstViewAvailableComics_Refresh()
         {
-            //clear items
+            //reset cache comic books and clear items
+            comicBooks = null;
             lstViewAvailableComics.Items.Clear();
 
             //update the comic book archives into the view
+            //cache each into comic book records
+            List<Business_Logic.ComicBook> cbList = new List<Business_Logic.ComicBook>();
+
             foreach (var file in Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "Resources", "comicbooks")))
             {
                 lstViewAvailableComics.Items.Add(Path.GetFileName(file));
+
+                string cbFullPath = "";
+                Business_Logic.ComicBook cb;
+                try
+                {
+                    //get full path of comic book archive
+                    cbFullPath = Path.GetFullPath(Path.Combine(@"Resources", @"comicbooks", Path.GetFileName(file)));
+
+                    //get comicbook instance
+                    cb = comicReader.GetComicBook(cbFullPath);
+                    if (cb == null)
+                        throw new InvalidOperationException("Comic book records is empty.");
+                }
+                catch (InvalidOperationException exc)
+                {
+                    Trace.WriteLine("Exception thrown: " + exc.Message);
+                    Trace.WriteLine("Comic book selected with archive path: <" + cbFullPath + "> does not exist in the comic book records. Initialized the comic book.");
+                    comicReader.InitializeNewComicBook(cbFullPath);
+                    cb = comicReader.GetComicBook(cbFullPath);
+                }
+
+                //add comic book to list
+                cbList.Add(cb);
+            }
+
+            comicBooks = cbList.ToArray();
+        }
+
+        private void lstViewAvailableComics_FillWithSearchCriteria(string searchVal)
+        {
+            //reset list view
+            lstViewAvailableComics.Items.Clear();
+
+            //filter by comic title, subtitle, and issue
+            if (rdBtnComicHeaders.Checked)
+            {
+                //exact match, case sensitive
+                if (chkBxSearchComicMatchCase.Checked)
+                {
+                    foreach (var cb in comicBooks)
+                    {
+                        if (cb.ComicTitle == searchVal ||
+                            cb.ComicSubTitle == searchVal ||
+                            cb.ComicIssue == searchVal)
+                        {
+                            lstViewAvailableComics.Items.Add(Path.GetFileName(cb.GetArchivePath()));
+                        }
+                    }
+                }
+                //check for substring existence, case insensitive
+                else
+                {
+                    foreach (var cb in comicBooks)
+                    {
+                        if (cb.ComicTitle.ToLower().Contains(searchVal.ToLower()) ||
+                            cb.ComicSubTitle.ToLower().Contains(searchVal.ToLower())||
+                            cb.ComicIssue.ToLower().Contains(searchVal.ToLower()))
+                        {
+                            lstViewAvailableComics.Items.Add(Path.GetFileName(cb.GetArchivePath()));
+                        }
+                    }
+                }
+            }
+            //filter by author/s
+            else if (rdBtnAuthors.Checked)
+            {
+                //exact match, case sensitive
+                if (chkBxSearchComicMatchCase.Checked)
+                {
+                    foreach (var cb in comicBooks)
+                    {
+                        //empty authors, don't bother checking, don't add
+                        if (cb.ComicAuthors != null && 
+                            cb.ComicAuthors.Where(author => author == searchVal).Count() != 0)
+                        {
+                            lstViewAvailableComics.Items.Add(Path.GetFileName(cb.GetArchivePath()));
+                        }
+                    }
+                }
+                //check for substring existence, case insensitive
+                else
+                {
+                    foreach (var cb in comicBooks)
+                    {
+                        //empty authors, don't bother checking, add all items to control
+                        if (cb.ComicAuthors != null &&
+                            cb.ComicAuthors.Where(author => author.ToLower().Contains(searchVal.ToLower())).Count() != 0)
+                        {
+                            lstViewAvailableComics.Items.Add(Path.GetFileName(cb.GetArchivePath()));
+                        }
+                    }
+                }
+            }
+            //filter by genre
+            else if (rdBtnGenre.Checked)
+            {
+                //exact match, case sensitive
+                if (chkBxSearchComicMatchCase.Checked)
+                {
+                    foreach (var cb in comicBooks)
+                    {
+                        if (cb.ComicGenre == searchVal)
+                        {
+                            lstViewAvailableComics.Items.Add(Path.GetFileName(cb.GetArchivePath()));
+                        }
+                    }
+                }
+                //check for substring existence, case insensitive
+                else
+                {
+                    foreach (var cb in comicBooks)
+                    {
+                        if (cb.ComicGenre.ToLower().Contains(searchVal.ToLower()))
+                        {
+                            lstViewAvailableComics.Items.Add(Path.GetFileName(cb.GetArchivePath()));
+                        }
+                    }
+                }
+            }
+            //filter by publisher
+            else
+            {
+                //exact match, case sensitive
+                if (chkBxSearchComicMatchCase.Checked)
+                {
+                    foreach (var cb in comicBooks)
+                    {
+                        if (cb.Publisher == searchVal)
+                        {
+                            lstViewAvailableComics.Items.Add(Path.GetFileName(cb.GetArchivePath()));
+                        }
+                    }
+                }
+                //check for substring existence, case insensitive
+                else
+                {
+                    foreach (var cb in comicBooks)
+                    {
+                        if (cb.Publisher.ToLower().Contains(searchVal.ToLower()))
+                        {
+                            lstViewAvailableComics.Items.Add(Path.GetFileName(cb.GetArchivePath()));
+                        }
+                    }
+                }
+            }
+
+            //sort values based on checked sort order
+            //sort by date added
+            if (rdBtnSortDateAdded.Checked)
+            {
+                List<string> cbPathList = new List<string>();
+                for (int i = 0; i < lstViewAvailableComics.Items.Count; i++)
+                {
+                    cbPathList.Add(lstViewAvailableComics.Items[i].Text);
+                }
+
+                //clear the control again
+                lstViewAvailableComics.Items.Clear();
+                cbPathList = cbPathList
+                    .OrderBy(
+                    path => comicReader.GetComicBook(Path.GetFullPath(Path.Combine(@"Resources", @"comicbooks", Path.GetFileName(path)))).ComicDateAdded
+                    ).ToList();
+
+                //readd to control
+                foreach (var cbPath in cbPathList)
+                {
+                    lstViewAvailableComics.Items.Add(cbPath);
+                }
+            }
+            //sort by date released
+            else
+            {
+                List<string> cbPathList = new List<string>();
+                for (int i = 0; i < lstViewAvailableComics.Items.Count; i++)
+                {
+                    cbPathList.Add(lstViewAvailableComics.Items[i].Text);
+                }
+
+                //clear the control again
+                lstViewAvailableComics.Items.Clear();
+                cbPathList = cbPathList
+                    .OrderBy(
+                    path => comicReader.GetComicBook(Path.GetFullPath(Path.Combine(@"Resources", @"comicbooks", Path.GetFileName(path)))).ComicDateReleased
+                    ).ToList();
+
+                //readd to control
+                foreach (var cbPath in cbPathList)
+                {
+                    lstViewAvailableComics.Items.Add(cbPath);
+                }
             }
         }
 
@@ -525,20 +733,7 @@ namespace ComicArchive.User_Interface
 
                 string cbFullPath = Path.GetFullPath(Path.Combine(@"Resources", @"comicbooks", selectedItem));
                 Business_Logic.ComicBook selectedComic;
-                try
-                {
-                    //get comicbook instance
-                    selectedComic = comicReader.GetComicBook(cbFullPath);
-                    if (selectedComic == null)
-                        throw new InvalidOperationException("Comic book records is empty.");
-                }
-                catch(InvalidOperationException exc)
-                {
-                    Trace.WriteLine("Exception thrown: " + exc.Message);
-                    Trace.WriteLine("Comic book selected with archive path: <" + cbFullPath + "> does not exist in the comic book records. Initialized the comic book.");
-                    comicReader.InitializeNewComicBook(cbFullPath);
-                    selectedComic = comicReader.GetComicBook(cbFullPath);
-                }
+                selectedComic = comicReader.GetComicBook(cbFullPath);
 
                 //enable textboxes/labels
                 ComicInfo_Enable(true);
@@ -567,6 +762,13 @@ namespace ComicArchive.User_Interface
             txtBxAuthors.ResetText();
             txtBxGenre.ResetText();
             txtBxPublisher.ResetText();
+
+            //reset cover 
+            if (picBxComicCover.Image != null)
+            {
+                picBxComicCover.Image.Dispose();
+                picBxComicCover.Image = null;
+            }
 
             //enable/disable
             btnDeleteComic.Enabled = enabled;
@@ -736,6 +938,11 @@ namespace ComicArchive.User_Interface
                 }
 
             }
+        }
+
+        private void SearchComic_CriteriaSearchEvent(object sender, EventArgs e)
+        {
+            lstViewAvailableComics_FillWithSearchCriteria(txtBxSearchComic.Text.Trim());
         }
     }
 }

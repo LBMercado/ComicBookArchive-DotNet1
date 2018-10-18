@@ -153,6 +153,12 @@ namespace ComicArchive.Data_Access
                 //load the comic book record xml file
                 XDocument xDocument = XDocument.Load(filePath);
 
+                //remove invalid records first if there are any
+                var nodes = xDocument.Descendants("ComicBook").Where(el => !File.Exists(el.Element("ArchivePath").Value)).ToList();
+
+                foreach (var node in nodes)
+                    node.Remove();
+
                 foreach (XElement bookRecord in xDocument.Descendants("ComicBook"))
                 {
                     //get metadata information
@@ -521,6 +527,58 @@ namespace ComicArchive.Data_Access
             else
             {
                 Trace.WriteLine("Set Path = " + "<" + filePath + ">" + " is invalid, cannot proceed with comic book records write operation.");
+                FileNotFoundException exc = new FileNotFoundException
+                    (
+                    "Set Path = " + "<" + filePath + ">" + " cannot proceed with comic book records access."
+                    );
+                throw exc;
+            }
+        }
+
+        /// <summary>
+        /// test for existence of comic book record based on archivePath
+        /// </summary>
+        /// <param name="archivePath">
+        /// path to the comic book archive
+        /// </param>
+        /// <returns>
+        /// true if it exists in the records, false otherwise
+        /// </returns>
+        public bool ComicBookRecordExists(string archivePath)
+        {
+            if (!File.Exists(archivePath))
+            {
+                Trace.WriteLine("Parameter archivePath = " + "<" + archivePath + ">" + " is invalid, cannot proceed with comic book records verification process.");
+                FileNotFoundException exc = new FileNotFoundException
+                    (
+                    "Parameter archivePath = " + "<" + archivePath + ">" + " is invalid, cannot proceed with comic bookrecords verification process."
+                    );
+                throw exc;
+            }
+
+            if (PathIsValid())
+            {
+                //load the comic book record xml file
+                XDocument xDocument = XDocument.Load(filePath);
+
+                foreach (XElement bookRecord in xDocument.Descendants("ComicBook"))
+                {
+                    //get metadata information
+                    //this is the path w/filename to the .cbz/.cbr, NOT THE CACHE
+                    XElement archivePathRead = bookRecord.Element("ArchivePath");
+
+                    //check if matching metadata
+                    if (archivePathRead.Value == archivePath)
+                    {
+                        return true;
+                    }
+
+                }
+                return false;
+            }
+            else
+            {
+                Trace.WriteLine("Set Path = " + "<" + filePath + ">" + " is invalid, cannot proceed with comic book records access.");
                 FileNotFoundException exc = new FileNotFoundException
                     (
                     "Set Path = " + "<" + filePath + ">" + " cannot proceed with comic book records access."

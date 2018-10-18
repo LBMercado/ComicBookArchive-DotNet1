@@ -47,9 +47,37 @@
             this.lblUserComicsList = new System.Windows.Forms.Label();
             this.lblUsersList = new System.Windows.Forms.Label();
             this.lstViewUserComics = new System.Windows.Forms.ListView();
+            this.colSavedComicName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tbPgComics = new System.Windows.Forms.TabPage();
+            this.lblViewCount = new System.Windows.Forms.Label();
+            this.lblAvgRating = new System.Windows.Forms.Label();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.btnEditComic = new System.Windows.Forms.Button();
+            this.btnDeleteComic = new System.Windows.Forms.Button();
+            this.btnImportComic = new System.Windows.Forms.Button();
+            this.tblLayoutPanelComicinfo = new System.Windows.Forms.TableLayoutPanel();
+            this.txtBxGenre = new System.Windows.Forms.TextBox();
+            this.txtBxAuthors = new System.Windows.Forms.TextBox();
+            this.txtBxDateReleased = new System.Windows.Forms.TextBox();
+            this.txtBxDateAdded = new System.Windows.Forms.TextBox();
+            this.txtBxComicIssue = new System.Windows.Forms.TextBox();
+            this.txtBxComicSubTitle = new System.Windows.Forms.TextBox();
+            this.lblAuthors = new System.Windows.Forms.Label();
+            this.lblGenre = new System.Windows.Forms.Label();
+            this.lblComicTitle = new System.Windows.Forms.Label();
+            this.lblSynopsis = new System.Windows.Forms.Label();
+            this.lblComicSubTitle = new System.Windows.Forms.Label();
+            this.lblDateReleased = new System.Windows.Forms.Label();
+            this.lbl_Issue = new System.Windows.Forms.Label();
+            this.lblDateAdded = new System.Windows.Forms.Label();
+            this.richTxtBxSynopsis = new System.Windows.Forms.RichTextBox();
+            this.txtBxComicTitle = new System.Windows.Forms.TextBox();
+            this.lblPublisher = new System.Windows.Forms.Label();
+            this.txtBxPublisher = new System.Windows.Forms.TextBox();
+            this.picBxComicCover = new System.Windows.Forms.PictureBox();
             this.lblAvailableComics = new System.Windows.Forms.Label();
             this.lstViewAvailableComics = new System.Windows.Forms.ListView();
+            this.colAvailableComicBookName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.grpBxAdminInfo = new System.Windows.Forms.GroupBox();
             this.btnChangeUsername = new System.Windows.Forms.Button();
             this.btnSignOut = new System.Windows.Forms.Button();
@@ -66,65 +94,33 @@
             this.rdBtnSearchByUsername = new System.Windows.Forms.RadioButton();
             this.rdBtnSearchById = new System.Windows.Forms.RadioButton();
             this.tbPgSearchComic = new System.Windows.Forms.TabPage();
-            this.txtBxSearchComic = new System.Windows.Forms.TextBox();
-            this.grpBxSearchComic = new System.Windows.Forms.GroupBox();
-            this.chkBxSearchComicMatchCase = new System.Windows.Forms.CheckBox();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.dateTimer = new System.Windows.Forms.Timer(this.components);
-            this.tblLayoutPanelComicinfo = new System.Windows.Forms.TableLayoutPanel();
-            this.lblAuthors = new System.Windows.Forms.Label();
-            this.lblComicTitle = new System.Windows.Forms.Label();
-            this.lblSynopsis = new System.Windows.Forms.Label();
-            this.lblComicSubTitle = new System.Windows.Forms.Label();
-            this.lblDateReleased = new System.Windows.Forms.Label();
-            this.lbl_Issue = new System.Windows.Forms.Label();
-            this.lblDateAdded = new System.Windows.Forms.Label();
-            this.richTxtBxSynopsis = new System.Windows.Forms.RichTextBox();
-            this.picBxComicCover = new System.Windows.Forms.PictureBox();
-            this.btnImportComic = new System.Windows.Forms.Button();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.btnDeleteComic = new System.Windows.Forms.Button();
-            this.btnEditComic = new System.Windows.Forms.Button();
-            this.lblGenre = new System.Windows.Forms.Label();
-            this.txtBxComicTitle = new System.Windows.Forms.TextBox();
-            this.txtBxComicSubTitle = new System.Windows.Forms.TextBox();
-            this.txtBxComicIssue = new System.Windows.Forms.TextBox();
-            this.txtBxDateAdded = new System.Windows.Forms.TextBox();
-            this.txtBxDateReleased = new System.Windows.Forms.TextBox();
-            this.txtBxAuthors = new System.Windows.Forms.TextBox();
-            this.txtBxGenre = new System.Windows.Forms.TextBox();
-            this.colSavedComicName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.colAvailableComicBookName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.radioButton4 = new System.Windows.Forms.RadioButton();
-            this.grpBxSortOrder = new System.Windows.Forms.GroupBox();
-            this.rdBtnSortDescending = new System.Windows.Forms.RadioButton();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.rdBtnSortAscending = new System.Windows.Forms.RadioButton();
-            this.rdBtnSortDateAdded = new System.Windows.Forms.RadioButton();
-            this.rdBtnSortDateReleased = new System.Windows.Forms.RadioButton();
             this.grpBxSortOptions = new System.Windows.Forms.GroupBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.lblPublisher = new System.Windows.Forms.Label();
-            this.txtBxPublisher = new System.Windows.Forms.TextBox();
-            this.lblAvgRating = new System.Windows.Forms.Label();
-            this.lblViewCount = new System.Windows.Forms.Label();
+            this.rdBtnSortDateReleased = new System.Windows.Forms.RadioButton();
+            this.rdBtnSortDateAdded = new System.Windows.Forms.RadioButton();
+            this.txtBxSearchComic = new System.Windows.Forms.TextBox();
+            this.grpBxSearchComic = new System.Windows.Forms.GroupBox();
+            this.rdBtnGenre = new System.Windows.Forms.RadioButton();
+            this.rdBtnPublisher = new System.Windows.Forms.RadioButton();
+            this.chkBxSearchComicMatchCase = new System.Windows.Forms.CheckBox();
+            this.rdBtnAuthors = new System.Windows.Forms.RadioButton();
+            this.rdBtnComicHeaders = new System.Windows.Forms.RadioButton();
+            this.dateTimer = new System.Windows.Forms.Timer(this.components);
             this.tbCtrlAdmin.SuspendLayout();
             this.tbPgUsers.SuspendLayout();
             this.flowLayoutPanelUsers.SuspendLayout();
             this.tbPgComics.SuspendLayout();
+            this.flowLayoutPanel1.SuspendLayout();
+            this.tblLayoutPanelComicinfo.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picBxComicCover)).BeginInit();
             this.grpBxAdminInfo.SuspendLayout();
             this.grpBxDate.SuspendLayout();
             this.tbCtrlSearch.SuspendLayout();
             this.tbPgSearchUser.SuspendLayout();
             this.grpBxSearchUserOptions.SuspendLayout();
             this.tbPgSearchComic.SuspendLayout();
-            this.grpBxSearchComic.SuspendLayout();
-            this.tblLayoutPanelComicinfo.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picBxComicCover)).BeginInit();
-            this.flowLayoutPanel1.SuspendLayout();
-            this.grpBxSortOrder.SuspendLayout();
             this.grpBxSortOptions.SuspendLayout();
+            this.grpBxSearchComic.SuspendLayout();
             this.SuspendLayout();
             // 
             // tbCtrlAdmin
@@ -337,6 +333,11 @@
             this.lstViewUserComics.View = System.Windows.Forms.View.Details;
             this.lstViewUserComics.Visible = false;
             // 
+            // colSavedComicName
+            // 
+            this.colSavedComicName.Text = "Comic Book Name";
+            this.colSavedComicName.Width = 370;
+            // 
             // tbPgComics
             // 
             this.tbPgComics.BackColor = System.Drawing.Color.DarkGray;
@@ -353,6 +354,286 @@
             this.tbPgComics.Size = new System.Drawing.Size(805, 754);
             this.tbPgComics.TabIndex = 1;
             this.tbPgComics.Text = "Comics";
+            // 
+            // lblViewCount
+            // 
+            this.lblViewCount.AutoSize = true;
+            this.lblViewCount.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.lblViewCount.Location = new System.Drawing.Point(332, 193);
+            this.lblViewCount.Name = "lblViewCount";
+            this.lblViewCount.Size = new System.Drawing.Size(63, 13);
+            this.lblViewCount.TabIndex = 32;
+            this.lblViewCount.Text = "# of Views: ";
+            this.lblViewCount.Visible = false;
+            // 
+            // lblAvgRating
+            // 
+            this.lblAvgRating.AutoSize = true;
+            this.lblAvgRating.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.lblAvgRating.Location = new System.Drawing.Point(332, 159);
+            this.lblAvgRating.Name = "lblAvgRating";
+            this.lblAvgRating.Size = new System.Drawing.Size(87, 13);
+            this.lblAvgRating.TabIndex = 31;
+            this.lblAvgRating.Text = "Average Rating: ";
+            this.lblAvgRating.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.lblAvgRating.Visible = false;
+            // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.Controls.Add(this.btnEditComic);
+            this.flowLayoutPanel1.Controls.Add(this.btnDeleteComic);
+            this.flowLayoutPanel1.Controls.Add(this.btnImportComic);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(60, 604);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(205, 137);
+            this.flowLayoutPanel1.TabIndex = 30;
+            // 
+            // btnEditComic
+            // 
+            this.btnEditComic.Enabled = false;
+            this.btnEditComic.Location = new System.Drawing.Point(3, 3);
+            this.btnEditComic.Name = "btnEditComic";
+            this.btnEditComic.Size = new System.Drawing.Size(197, 37);
+            this.btnEditComic.TabIndex = 31;
+            this.btnEditComic.Text = "Edit Comic Book Details";
+            this.btnEditComic.UseVisualStyleBackColor = true;
+            this.btnEditComic.Click += new System.EventHandler(this.btnEditComic_Click);
+            // 
+            // btnDeleteComic
+            // 
+            this.btnDeleteComic.Enabled = false;
+            this.btnDeleteComic.Location = new System.Drawing.Point(3, 46);
+            this.btnDeleteComic.Name = "btnDeleteComic";
+            this.btnDeleteComic.Size = new System.Drawing.Size(197, 37);
+            this.btnDeleteComic.TabIndex = 30;
+            this.btnDeleteComic.Text = "Delete Comic Book";
+            this.btnDeleteComic.UseVisualStyleBackColor = true;
+            this.btnDeleteComic.Click += new System.EventHandler(this.btnDeleteComic_Click);
+            // 
+            // btnImportComic
+            // 
+            this.btnImportComic.Location = new System.Drawing.Point(3, 89);
+            this.btnImportComic.Name = "btnImportComic";
+            this.btnImportComic.Size = new System.Drawing.Size(197, 37);
+            this.btnImportComic.TabIndex = 29;
+            this.btnImportComic.Text = "Import a Comic Book (.cbz/.cbr)";
+            this.btnImportComic.UseVisualStyleBackColor = true;
+            this.btnImportComic.Click += new System.EventHandler(this.btnImportComic_Click);
+            // 
+            // tblLayoutPanelComicinfo
+            // 
+            this.tblLayoutPanelComicinfo.ColumnCount = 2;
+            this.tblLayoutPanelComicinfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tblLayoutPanelComicinfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tblLayoutPanelComicinfo.Controls.Add(this.txtBxGenre, 1, 8);
+            this.tblLayoutPanelComicinfo.Controls.Add(this.txtBxAuthors, 1, 7);
+            this.tblLayoutPanelComicinfo.Controls.Add(this.txtBxDateReleased, 1, 4);
+            this.tblLayoutPanelComicinfo.Controls.Add(this.txtBxDateAdded, 1, 3);
+            this.tblLayoutPanelComicinfo.Controls.Add(this.txtBxComicIssue, 1, 2);
+            this.tblLayoutPanelComicinfo.Controls.Add(this.txtBxComicSubTitle, 1, 1);
+            this.tblLayoutPanelComicinfo.Controls.Add(this.lblAuthors, 0, 7);
+            this.tblLayoutPanelComicinfo.Controls.Add(this.lblGenre, 0, 8);
+            this.tblLayoutPanelComicinfo.Controls.Add(this.lblComicTitle, 0, 0);
+            this.tblLayoutPanelComicinfo.Controls.Add(this.lblSynopsis, 0, 5);
+            this.tblLayoutPanelComicinfo.Controls.Add(this.lblComicSubTitle, 0, 1);
+            this.tblLayoutPanelComicinfo.Controls.Add(this.lblDateReleased, 0, 4);
+            this.tblLayoutPanelComicinfo.Controls.Add(this.lbl_Issue, 0, 2);
+            this.tblLayoutPanelComicinfo.Controls.Add(this.lblDateAdded, 0, 3);
+            this.tblLayoutPanelComicinfo.Controls.Add(this.richTxtBxSynopsis, 0, 6);
+            this.tblLayoutPanelComicinfo.Controls.Add(this.txtBxComicTitle, 1, 0);
+            this.tblLayoutPanelComicinfo.Controls.Add(this.lblPublisher, 0, 9);
+            this.tblLayoutPanelComicinfo.Controls.Add(this.txtBxPublisher, 1, 9);
+            this.tblLayoutPanelComicinfo.Location = new System.Drawing.Point(335, 229);
+            this.tblLayoutPanelComicinfo.Name = "tblLayoutPanelComicinfo";
+            this.tblLayoutPanelComicinfo.RowCount = 10;
+            this.tblLayoutPanelComicinfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.090909F));
+            this.tblLayoutPanelComicinfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.090909F));
+            this.tblLayoutPanelComicinfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.090909F));
+            this.tblLayoutPanelComicinfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.090909F));
+            this.tblLayoutPanelComicinfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.090909F));
+            this.tblLayoutPanelComicinfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 4.545455F));
+            this.tblLayoutPanelComicinfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 22.72727F));
+            this.tblLayoutPanelComicinfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.090909F));
+            this.tblLayoutPanelComicinfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.090909F));
+            this.tblLayoutPanelComicinfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.090909F));
+            this.tblLayoutPanelComicinfo.Size = new System.Drawing.Size(464, 519);
+            this.tblLayoutPanelComicinfo.TabIndex = 28;
+            // 
+            // txtBxGenre
+            // 
+            this.txtBxGenre.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtBxGenre.Location = new System.Drawing.Point(129, 425);
+            this.txtBxGenre.Name = "txtBxGenre";
+            this.txtBxGenre.Size = new System.Drawing.Size(332, 20);
+            this.txtBxGenre.TabIndex = 34;
+            // 
+            // txtBxAuthors
+            // 
+            this.txtBxAuthors.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtBxAuthors.Location = new System.Drawing.Point(129, 378);
+            this.txtBxAuthors.Name = "txtBxAuthors";
+            this.txtBxAuthors.Size = new System.Drawing.Size(332, 20);
+            this.txtBxAuthors.TabIndex = 33;
+            // 
+            // txtBxDateReleased
+            // 
+            this.txtBxDateReleased.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtBxDateReleased.Location = new System.Drawing.Point(129, 191);
+            this.txtBxDateReleased.Name = "txtBxDateReleased";
+            this.txtBxDateReleased.Size = new System.Drawing.Size(332, 20);
+            this.txtBxDateReleased.TabIndex = 32;
+            // 
+            // txtBxDateAdded
+            // 
+            this.txtBxDateAdded.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtBxDateAdded.Location = new System.Drawing.Point(129, 144);
+            this.txtBxDateAdded.Name = "txtBxDateAdded";
+            this.txtBxDateAdded.Size = new System.Drawing.Size(332, 20);
+            this.txtBxDateAdded.TabIndex = 31;
+            // 
+            // txtBxComicIssue
+            // 
+            this.txtBxComicIssue.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtBxComicIssue.Location = new System.Drawing.Point(129, 97);
+            this.txtBxComicIssue.Name = "txtBxComicIssue";
+            this.txtBxComicIssue.Size = new System.Drawing.Size(332, 20);
+            this.txtBxComicIssue.TabIndex = 30;
+            // 
+            // txtBxComicSubTitle
+            // 
+            this.txtBxComicSubTitle.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtBxComicSubTitle.Location = new System.Drawing.Point(129, 50);
+            this.txtBxComicSubTitle.Name = "txtBxComicSubTitle";
+            this.txtBxComicSubTitle.Size = new System.Drawing.Size(332, 20);
+            this.txtBxComicSubTitle.TabIndex = 29;
+            // 
+            // lblAuthors
+            // 
+            this.lblAuthors.AutoSize = true;
+            this.lblAuthors.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblAuthors.Location = new System.Drawing.Point(3, 375);
+            this.lblAuthors.Name = "lblAuthors";
+            this.lblAuthors.Size = new System.Drawing.Size(120, 47);
+            this.lblAuthors.TabIndex = 27;
+            this.lblAuthors.Text = "Author/s: \r\n(Separate with commas)";
+            // 
+            // lblGenre
+            // 
+            this.lblGenre.AutoSize = true;
+            this.lblGenre.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblGenre.Location = new System.Drawing.Point(3, 422);
+            this.lblGenre.Name = "lblGenre";
+            this.lblGenre.Size = new System.Drawing.Size(120, 47);
+            this.lblGenre.TabIndex = 26;
+            this.lblGenre.Text = "Genre: ";
+            // 
+            // lblComicTitle
+            // 
+            this.lblComicTitle.AutoSize = true;
+            this.lblComicTitle.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblComicTitle.Location = new System.Drawing.Point(3, 0);
+            this.lblComicTitle.Name = "lblComicTitle";
+            this.lblComicTitle.Size = new System.Drawing.Size(120, 47);
+            this.lblComicTitle.TabIndex = 20;
+            this.lblComicTitle.Text = "Comic Title: ";
+            // 
+            // lblSynopsis
+            // 
+            this.lblSynopsis.AutoSize = true;
+            this.tblLayoutPanelComicinfo.SetColumnSpan(this.lblSynopsis, 2);
+            this.lblSynopsis.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblSynopsis.Location = new System.Drawing.Point(3, 235);
+            this.lblSynopsis.Name = "lblSynopsis";
+            this.lblSynopsis.Size = new System.Drawing.Size(458, 23);
+            this.lblSynopsis.TabIndex = 24;
+            this.lblSynopsis.Text = "Synopsis: ";
+            // 
+            // lblComicSubTitle
+            // 
+            this.lblComicSubTitle.AutoSize = true;
+            this.lblComicSubTitle.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblComicSubTitle.Location = new System.Drawing.Point(3, 47);
+            this.lblComicSubTitle.Name = "lblComicSubTitle";
+            this.lblComicSubTitle.Size = new System.Drawing.Size(120, 47);
+            this.lblComicSubTitle.TabIndex = 19;
+            this.lblComicSubTitle.Text = "Comic Subtitle:";
+            // 
+            // lblDateReleased
+            // 
+            this.lblDateReleased.AutoSize = true;
+            this.lblDateReleased.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblDateReleased.Location = new System.Drawing.Point(3, 188);
+            this.lblDateReleased.Name = "lblDateReleased";
+            this.lblDateReleased.Size = new System.Drawing.Size(120, 47);
+            this.lblDateReleased.TabIndex = 23;
+            this.lblDateReleased.Text = "Date Released: ";
+            // 
+            // lbl_Issue
+            // 
+            this.lbl_Issue.AutoSize = true;
+            this.lbl_Issue.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lbl_Issue.Location = new System.Drawing.Point(3, 94);
+            this.lbl_Issue.Name = "lbl_Issue";
+            this.lbl_Issue.Size = new System.Drawing.Size(120, 47);
+            this.lbl_Issue.TabIndex = 21;
+            this.lbl_Issue.Text = "Issue: ";
+            // 
+            // lblDateAdded
+            // 
+            this.lblDateAdded.AutoSize = true;
+            this.lblDateAdded.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblDateAdded.Location = new System.Drawing.Point(3, 141);
+            this.lblDateAdded.Name = "lblDateAdded";
+            this.lblDateAdded.Size = new System.Drawing.Size(120, 47);
+            this.lblDateAdded.TabIndex = 22;
+            this.lblDateAdded.Text = "Date Added: ";
+            // 
+            // richTxtBxSynopsis
+            // 
+            this.tblLayoutPanelComicinfo.SetColumnSpan(this.richTxtBxSynopsis, 2);
+            this.richTxtBxSynopsis.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.richTxtBxSynopsis.Location = new System.Drawing.Point(3, 261);
+            this.richTxtBxSynopsis.Name = "richTxtBxSynopsis";
+            this.richTxtBxSynopsis.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            this.richTxtBxSynopsis.Size = new System.Drawing.Size(458, 111);
+            this.richTxtBxSynopsis.TabIndex = 25;
+            this.richTxtBxSynopsis.Text = "";
+            // 
+            // txtBxComicTitle
+            // 
+            this.txtBxComicTitle.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtBxComicTitle.Location = new System.Drawing.Point(129, 3);
+            this.txtBxComicTitle.Name = "txtBxComicTitle";
+            this.txtBxComicTitle.Size = new System.Drawing.Size(332, 20);
+            this.txtBxComicTitle.TabIndex = 28;
+            // 
+            // lblPublisher
+            // 
+            this.lblPublisher.AutoSize = true;
+            this.lblPublisher.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblPublisher.Location = new System.Drawing.Point(3, 469);
+            this.lblPublisher.Name = "lblPublisher";
+            this.lblPublisher.Size = new System.Drawing.Size(120, 50);
+            this.lblPublisher.TabIndex = 35;
+            this.lblPublisher.Text = "Publisher: ";
+            // 
+            // txtBxPublisher
+            // 
+            this.txtBxPublisher.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtBxPublisher.Location = new System.Drawing.Point(129, 472);
+            this.txtBxPublisher.Name = "txtBxPublisher";
+            this.txtBxPublisher.Size = new System.Drawing.Size(332, 20);
+            this.txtBxPublisher.TabIndex = 36;
+            // 
+            // picBxComicCover
+            // 
+            this.picBxComicCover.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.picBxComicCover.Location = new System.Drawing.Point(485, 14);
+            this.picBxComicCover.Name = "picBxComicCover";
+            this.picBxComicCover.Size = new System.Drawing.Size(200, 200);
+            this.picBxComicCover.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.picBxComicCover.TabIndex = 27;
+            this.picBxComicCover.TabStop = false;
             // 
             // lblAvailableComics
             // 
@@ -380,6 +661,11 @@
             this.lstViewAvailableComics.UseCompatibleStateImageBehavior = false;
             this.lstViewAvailableComics.View = System.Windows.Forms.View.Details;
             this.lstViewAvailableComics.SelectedIndexChanged += new System.EventHandler(this.lstViewAvailableComics_SelectedIndexChanged);
+            // 
+            // colAvailableComicBookName
+            // 
+            this.colAvailableComicBookName.Text = "Comic Book Name";
+            this.colAvailableComicBookName.Width = 320;
             // 
             // grpBxAdminInfo
             // 
@@ -544,405 +830,21 @@
             // 
             this.tbPgSearchComic.BackColor = System.Drawing.Color.LightGray;
             this.tbPgSearchComic.Controls.Add(this.grpBxSortOptions);
-            this.tbPgSearchComic.Controls.Add(this.grpBxSortOrder);
             this.tbPgSearchComic.Controls.Add(this.txtBxSearchComic);
             this.tbPgSearchComic.Controls.Add(this.grpBxSearchComic);
             this.tbPgSearchComic.Location = new System.Drawing.Point(4, 22);
             this.tbPgSearchComic.Name = "tbPgSearchComic";
             this.tbPgSearchComic.Padding = new System.Windows.Forms.Padding(3);
-            this.tbPgSearchComic.Size = new System.Drawing.Size(230, 323);
+            this.tbPgSearchComic.Size = new System.Drawing.Size(230, 499);
             this.tbPgSearchComic.TabIndex = 1;
             this.tbPgSearchComic.Text = "Comics";
-            // 
-            // txtBxSearchComic
-            // 
-            this.txtBxSearchComic.Location = new System.Drawing.Point(6, 297);
-            this.txtBxSearchComic.Name = "txtBxSearchComic";
-            this.txtBxSearchComic.Size = new System.Drawing.Size(218, 20);
-            this.txtBxSearchComic.TabIndex = 3;
-            // 
-            // grpBxSearchComic
-            // 
-            this.grpBxSearchComic.Controls.Add(this.radioButton4);
-            this.grpBxSearchComic.Controls.Add(this.chkBxSearchComicMatchCase);
-            this.grpBxSearchComic.Controls.Add(this.radioButton1);
-            this.grpBxSearchComic.Controls.Add(this.radioButton2);
-            this.grpBxSearchComic.Location = new System.Drawing.Point(6, 6);
-            this.grpBxSearchComic.Name = "grpBxSearchComic";
-            this.grpBxSearchComic.Size = new System.Drawing.Size(218, 139);
-            this.grpBxSearchComic.TabIndex = 2;
-            this.grpBxSearchComic.TabStop = false;
-            this.grpBxSearchComic.Text = "Search Options";
-            // 
-            // chkBxSearchComicMatchCase
-            // 
-            this.chkBxSearchComicMatchCase.AutoSize = true;
-            this.chkBxSearchComicMatchCase.Location = new System.Drawing.Point(5, 106);
-            this.chkBxSearchComicMatchCase.Name = "chkBxSearchComicMatchCase";
-            this.chkBxSearchComicMatchCase.Size = new System.Drawing.Size(83, 17);
-            this.chkBxSearchComicMatchCase.TabIndex = 2;
-            this.chkBxSearchComicMatchCase.Text = "Match Case";
-            this.chkBxSearchComicMatchCase.UseVisualStyleBackColor = true;
-            // 
-            // radioButton1
-            // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(6, 44);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(109, 17);
-            this.radioButton1.TabIndex = 1;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "Filter using Author";
-            this.radioButton1.UseVisualStyleBackColor = true;
-            // 
-            // radioButton2
-            // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(6, 19);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(168, 17);
-            this.radioButton2.TabIndex = 0;
-            this.radioButton2.TabStop = true;
-            this.radioButton2.Text = "Filter using Title/Subtitle/Issue";
-            this.radioButton2.UseVisualStyleBackColor = true;
-            // 
-            // dateTimer
-            // 
-            this.dateTimer.Enabled = true;
-            this.dateTimer.Tick += new System.EventHandler(this.dateTimer_Tick);
-            // 
-            // tblLayoutPanelComicinfo
-            // 
-            this.tblLayoutPanelComicinfo.ColumnCount = 2;
-            this.tblLayoutPanelComicinfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tblLayoutPanelComicinfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tblLayoutPanelComicinfo.Controls.Add(this.txtBxGenre, 1, 8);
-            this.tblLayoutPanelComicinfo.Controls.Add(this.txtBxAuthors, 1, 7);
-            this.tblLayoutPanelComicinfo.Controls.Add(this.txtBxDateReleased, 1, 4);
-            this.tblLayoutPanelComicinfo.Controls.Add(this.txtBxDateAdded, 1, 3);
-            this.tblLayoutPanelComicinfo.Controls.Add(this.txtBxComicIssue, 1, 2);
-            this.tblLayoutPanelComicinfo.Controls.Add(this.txtBxComicSubTitle, 1, 1);
-            this.tblLayoutPanelComicinfo.Controls.Add(this.lblAuthors, 0, 7);
-            this.tblLayoutPanelComicinfo.Controls.Add(this.lblGenre, 0, 8);
-            this.tblLayoutPanelComicinfo.Controls.Add(this.lblComicTitle, 0, 0);
-            this.tblLayoutPanelComicinfo.Controls.Add(this.lblSynopsis, 0, 5);
-            this.tblLayoutPanelComicinfo.Controls.Add(this.lblComicSubTitle, 0, 1);
-            this.tblLayoutPanelComicinfo.Controls.Add(this.lblDateReleased, 0, 4);
-            this.tblLayoutPanelComicinfo.Controls.Add(this.lbl_Issue, 0, 2);
-            this.tblLayoutPanelComicinfo.Controls.Add(this.lblDateAdded, 0, 3);
-            this.tblLayoutPanelComicinfo.Controls.Add(this.richTxtBxSynopsis, 0, 6);
-            this.tblLayoutPanelComicinfo.Controls.Add(this.txtBxComicTitle, 1, 0);
-            this.tblLayoutPanelComicinfo.Controls.Add(this.lblPublisher, 0, 9);
-            this.tblLayoutPanelComicinfo.Controls.Add(this.txtBxPublisher, 1, 9);
-            this.tblLayoutPanelComicinfo.Location = new System.Drawing.Point(335, 229);
-            this.tblLayoutPanelComicinfo.Name = "tblLayoutPanelComicinfo";
-            this.tblLayoutPanelComicinfo.RowCount = 10;
-            this.tblLayoutPanelComicinfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.090909F));
-            this.tblLayoutPanelComicinfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.090909F));
-            this.tblLayoutPanelComicinfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.090909F));
-            this.tblLayoutPanelComicinfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.090909F));
-            this.tblLayoutPanelComicinfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.090909F));
-            this.tblLayoutPanelComicinfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 4.545455F));
-            this.tblLayoutPanelComicinfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 22.72727F));
-            this.tblLayoutPanelComicinfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.090909F));
-            this.tblLayoutPanelComicinfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.090909F));
-            this.tblLayoutPanelComicinfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.090909F));
-            this.tblLayoutPanelComicinfo.Size = new System.Drawing.Size(464, 519);
-            this.tblLayoutPanelComicinfo.TabIndex = 28;
-            // 
-            // lblAuthors
-            // 
-            this.lblAuthors.AutoSize = true;
-            this.lblAuthors.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblAuthors.Location = new System.Drawing.Point(3, 375);
-            this.lblAuthors.Name = "lblAuthors";
-            this.lblAuthors.Size = new System.Drawing.Size(120, 47);
-            this.lblAuthors.TabIndex = 27;
-            this.lblAuthors.Text = "Author/s: \r\n(Separate with commas)";
-            // 
-            // lblComicTitle
-            // 
-            this.lblComicTitle.AutoSize = true;
-            this.lblComicTitle.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblComicTitle.Location = new System.Drawing.Point(3, 0);
-            this.lblComicTitle.Name = "lblComicTitle";
-            this.lblComicTitle.Size = new System.Drawing.Size(120, 47);
-            this.lblComicTitle.TabIndex = 20;
-            this.lblComicTitle.Text = "Comic Title: ";
-            // 
-            // lblSynopsis
-            // 
-            this.lblSynopsis.AutoSize = true;
-            this.tblLayoutPanelComicinfo.SetColumnSpan(this.lblSynopsis, 2);
-            this.lblSynopsis.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblSynopsis.Location = new System.Drawing.Point(3, 235);
-            this.lblSynopsis.Name = "lblSynopsis";
-            this.lblSynopsis.Size = new System.Drawing.Size(458, 23);
-            this.lblSynopsis.TabIndex = 24;
-            this.lblSynopsis.Text = "Synopsis: ";
-            // 
-            // lblComicSubTitle
-            // 
-            this.lblComicSubTitle.AutoSize = true;
-            this.lblComicSubTitle.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblComicSubTitle.Location = new System.Drawing.Point(3, 47);
-            this.lblComicSubTitle.Name = "lblComicSubTitle";
-            this.lblComicSubTitle.Size = new System.Drawing.Size(120, 47);
-            this.lblComicSubTitle.TabIndex = 19;
-            this.lblComicSubTitle.Text = "Comic Subtitle:";
-            // 
-            // lblDateReleased
-            // 
-            this.lblDateReleased.AutoSize = true;
-            this.lblDateReleased.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblDateReleased.Location = new System.Drawing.Point(3, 188);
-            this.lblDateReleased.Name = "lblDateReleased";
-            this.lblDateReleased.Size = new System.Drawing.Size(120, 47);
-            this.lblDateReleased.TabIndex = 23;
-            this.lblDateReleased.Text = "Date Released: ";
-            // 
-            // lbl_Issue
-            // 
-            this.lbl_Issue.AutoSize = true;
-            this.lbl_Issue.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lbl_Issue.Location = new System.Drawing.Point(3, 94);
-            this.lbl_Issue.Name = "lbl_Issue";
-            this.lbl_Issue.Size = new System.Drawing.Size(120, 47);
-            this.lbl_Issue.TabIndex = 21;
-            this.lbl_Issue.Text = "Issue: ";
-            // 
-            // lblDateAdded
-            // 
-            this.lblDateAdded.AutoSize = true;
-            this.lblDateAdded.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblDateAdded.Location = new System.Drawing.Point(3, 141);
-            this.lblDateAdded.Name = "lblDateAdded";
-            this.lblDateAdded.Size = new System.Drawing.Size(120, 47);
-            this.lblDateAdded.TabIndex = 22;
-            this.lblDateAdded.Text = "Date Added: ";
-            // 
-            // richTxtBxSynopsis
-            // 
-            this.tblLayoutPanelComicinfo.SetColumnSpan(this.richTxtBxSynopsis, 2);
-            this.richTxtBxSynopsis.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.richTxtBxSynopsis.Location = new System.Drawing.Point(3, 261);
-            this.richTxtBxSynopsis.Name = "richTxtBxSynopsis";
-            this.richTxtBxSynopsis.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.richTxtBxSynopsis.Size = new System.Drawing.Size(458, 111);
-            this.richTxtBxSynopsis.TabIndex = 25;
-            this.richTxtBxSynopsis.Text = "";
-            // 
-            // picBxComicCover
-            // 
-            this.picBxComicCover.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.picBxComicCover.Location = new System.Drawing.Point(485, 14);
-            this.picBxComicCover.Name = "picBxComicCover";
-            this.picBxComicCover.Size = new System.Drawing.Size(200, 200);
-            this.picBxComicCover.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.picBxComicCover.TabIndex = 27;
-            this.picBxComicCover.TabStop = false;
-            // 
-            // btnImportComic
-            // 
-            this.btnImportComic.Location = new System.Drawing.Point(3, 89);
-            this.btnImportComic.Name = "btnImportComic";
-            this.btnImportComic.Size = new System.Drawing.Size(197, 37);
-            this.btnImportComic.TabIndex = 29;
-            this.btnImportComic.Text = "Import a Comic Book (.cbz/.cbr)";
-            this.btnImportComic.UseVisualStyleBackColor = true;
-            this.btnImportComic.Click += new System.EventHandler(this.btnImportComic_Click);
-            // 
-            // flowLayoutPanel1
-            // 
-            this.flowLayoutPanel1.Controls.Add(this.btnEditComic);
-            this.flowLayoutPanel1.Controls.Add(this.btnDeleteComic);
-            this.flowLayoutPanel1.Controls.Add(this.btnImportComic);
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(60, 604);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(205, 137);
-            this.flowLayoutPanel1.TabIndex = 30;
-            // 
-            // btnDeleteComic
-            // 
-            this.btnDeleteComic.Enabled = false;
-            this.btnDeleteComic.Location = new System.Drawing.Point(3, 46);
-            this.btnDeleteComic.Name = "btnDeleteComic";
-            this.btnDeleteComic.Size = new System.Drawing.Size(197, 37);
-            this.btnDeleteComic.TabIndex = 30;
-            this.btnDeleteComic.Text = "Delete Comic Book";
-            this.btnDeleteComic.UseVisualStyleBackColor = true;
-            this.btnDeleteComic.Click += new System.EventHandler(this.btnDeleteComic_Click);
-            // 
-            // btnEditComic
-            // 
-            this.btnEditComic.Enabled = false;
-            this.btnEditComic.Location = new System.Drawing.Point(3, 3);
-            this.btnEditComic.Name = "btnEditComic";
-            this.btnEditComic.Size = new System.Drawing.Size(197, 37);
-            this.btnEditComic.TabIndex = 31;
-            this.btnEditComic.Text = "Edit Comic Book Details";
-            this.btnEditComic.UseVisualStyleBackColor = true;
-            this.btnEditComic.Click += new System.EventHandler(this.btnEditComic_Click);
-            // 
-            // lblGenre
-            // 
-            this.lblGenre.AutoSize = true;
-            this.lblGenre.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblGenre.Location = new System.Drawing.Point(3, 422);
-            this.lblGenre.Name = "lblGenre";
-            this.lblGenre.Size = new System.Drawing.Size(120, 47);
-            this.lblGenre.TabIndex = 26;
-            this.lblGenre.Text = "Genre: ";
-            // 
-            // txtBxComicTitle
-            // 
-            this.txtBxComicTitle.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtBxComicTitle.Location = new System.Drawing.Point(129, 3);
-            this.txtBxComicTitle.Name = "txtBxComicTitle";
-            this.txtBxComicTitle.Size = new System.Drawing.Size(332, 20);
-            this.txtBxComicTitle.TabIndex = 28;
-            // 
-            // txtBxComicSubTitle
-            // 
-            this.txtBxComicSubTitle.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtBxComicSubTitle.Location = new System.Drawing.Point(129, 50);
-            this.txtBxComicSubTitle.Name = "txtBxComicSubTitle";
-            this.txtBxComicSubTitle.Size = new System.Drawing.Size(332, 20);
-            this.txtBxComicSubTitle.TabIndex = 29;
-            // 
-            // txtBxComicIssue
-            // 
-            this.txtBxComicIssue.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtBxComicIssue.Location = new System.Drawing.Point(129, 97);
-            this.txtBxComicIssue.Name = "txtBxComicIssue";
-            this.txtBxComicIssue.Size = new System.Drawing.Size(332, 20);
-            this.txtBxComicIssue.TabIndex = 30;
-            // 
-            // txtBxDateAdded
-            // 
-            this.txtBxDateAdded.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtBxDateAdded.Location = new System.Drawing.Point(129, 144);
-            this.txtBxDateAdded.Name = "txtBxDateAdded";
-            this.txtBxDateAdded.Size = new System.Drawing.Size(332, 20);
-            this.txtBxDateAdded.TabIndex = 31;
-            // 
-            // txtBxDateReleased
-            // 
-            this.txtBxDateReleased.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtBxDateReleased.Location = new System.Drawing.Point(129, 191);
-            this.txtBxDateReleased.Name = "txtBxDateReleased";
-            this.txtBxDateReleased.Size = new System.Drawing.Size(332, 20);
-            this.txtBxDateReleased.TabIndex = 32;
-            // 
-            // txtBxAuthors
-            // 
-            this.txtBxAuthors.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtBxAuthors.Location = new System.Drawing.Point(129, 378);
-            this.txtBxAuthors.Name = "txtBxAuthors";
-            this.txtBxAuthors.Size = new System.Drawing.Size(332, 20);
-            this.txtBxAuthors.TabIndex = 33;
-            // 
-            // txtBxGenre
-            // 
-            this.txtBxGenre.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtBxGenre.Location = new System.Drawing.Point(129, 425);
-            this.txtBxGenre.Name = "txtBxGenre";
-            this.txtBxGenre.Size = new System.Drawing.Size(332, 20);
-            this.txtBxGenre.TabIndex = 34;
-            // 
-            // colSavedComicName
-            // 
-            this.colSavedComicName.Text = "Comic Book Name";
-            this.colSavedComicName.Width = 370;
-            // 
-            // colAvailableComicBookName
-            // 
-            this.colAvailableComicBookName.Text = "Comic Book Name";
-            this.colAvailableComicBookName.Width = 320;
-            // 
-            // radioButton4
-            // 
-            this.radioButton4.AutoSize = true;
-            this.radioButton4.Location = new System.Drawing.Point(5, 67);
-            this.radioButton4.Name = "radioButton4";
-            this.radioButton4.Size = new System.Drawing.Size(107, 17);
-            this.radioButton4.TabIndex = 4;
-            this.radioButton4.TabStop = true;
-            this.radioButton4.Text = "Filter using Genre";
-            this.radioButton4.UseVisualStyleBackColor = true;
-            // 
-            // grpBxSortOrder
-            // 
-            this.grpBxSortOrder.Controls.Add(this.rdBtnSortDescending);
-            this.grpBxSortOrder.Controls.Add(this.checkBox1);
-            this.grpBxSortOrder.Controls.Add(this.rdBtnSortAscending);
-            this.grpBxSortOrder.Location = new System.Drawing.Point(6, 223);
-            this.grpBxSortOrder.Name = "grpBxSortOrder";
-            this.grpBxSortOrder.Size = new System.Drawing.Size(218, 66);
-            this.grpBxSortOrder.TabIndex = 5;
-            this.grpBxSortOrder.TabStop = false;
-            this.grpBxSortOrder.Text = "Sort Order";
-            // 
-            // rdBtnSortDescending
-            // 
-            this.rdBtnSortDescending.AutoSize = true;
-            this.rdBtnSortDescending.Location = new System.Drawing.Point(5, 42);
-            this.rdBtnSortDescending.Name = "rdBtnSortDescending";
-            this.rdBtnSortDescending.Size = new System.Drawing.Size(104, 17);
-            this.rdBtnSortDescending.TabIndex = 4;
-            this.rdBtnSortDescending.TabStop = true;
-            this.rdBtnSortDescending.Text = "Sort Descending";
-            this.rdBtnSortDescending.UseVisualStyleBackColor = true;
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(5, 177);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(83, 17);
-            this.checkBox1.TabIndex = 2;
-            this.checkBox1.Text = "Match Case";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            // 
-            // rdBtnSortAscending
-            // 
-            this.rdBtnSortAscending.AutoSize = true;
-            this.rdBtnSortAscending.Location = new System.Drawing.Point(5, 19);
-            this.rdBtnSortAscending.Name = "rdBtnSortAscending";
-            this.rdBtnSortAscending.Size = new System.Drawing.Size(97, 17);
-            this.rdBtnSortAscending.TabIndex = 1;
-            this.rdBtnSortAscending.TabStop = true;
-            this.rdBtnSortAscending.Text = "Sort Ascending";
-            this.rdBtnSortAscending.UseVisualStyleBackColor = true;
-            // 
-            // rdBtnSortDateAdded
-            // 
-            this.rdBtnSortDateAdded.AutoSize = true;
-            this.rdBtnSortDateAdded.Location = new System.Drawing.Point(8, 17);
-            this.rdBtnSortDateAdded.Name = "rdBtnSortDateAdded";
-            this.rdBtnSortDateAdded.Size = new System.Drawing.Size(119, 17);
-            this.rdBtnSortDateAdded.TabIndex = 0;
-            this.rdBtnSortDateAdded.TabStop = true;
-            this.rdBtnSortDateAdded.Text = "Sort By Date Added";
-            this.rdBtnSortDateAdded.UseVisualStyleBackColor = true;
-            // 
-            // rdBtnSortDateReleased
-            // 
-            this.rdBtnSortDateReleased.AutoSize = true;
-            this.rdBtnSortDateReleased.Location = new System.Drawing.Point(8, 42);
-            this.rdBtnSortDateReleased.Name = "rdBtnSortDateReleased";
-            this.rdBtnSortDateReleased.Size = new System.Drawing.Size(133, 17);
-            this.rdBtnSortDateReleased.TabIndex = 3;
-            this.rdBtnSortDateReleased.TabStop = true;
-            this.rdBtnSortDateReleased.Text = "Sort By Date Released";
-            this.rdBtnSortDateReleased.UseVisualStyleBackColor = true;
             // 
             // grpBxSortOptions
             // 
             this.grpBxSortOptions.Controls.Add(this.checkBox2);
             this.grpBxSortOptions.Controls.Add(this.rdBtnSortDateReleased);
             this.grpBxSortOptions.Controls.Add(this.rdBtnSortDateAdded);
-            this.grpBxSortOptions.Location = new System.Drawing.Point(6, 151);
+            this.grpBxSortOptions.Location = new System.Drawing.Point(6, 172);
             this.grpBxSortOptions.Name = "grpBxSortOptions";
             this.grpBxSortOptions.Size = new System.Drawing.Size(218, 66);
             this.grpBxSortOptions.TabIndex = 6;
@@ -959,46 +861,114 @@
             this.checkBox2.Text = "Match Case";
             this.checkBox2.UseVisualStyleBackColor = true;
             // 
-            // lblPublisher
+            // rdBtnSortDateReleased
             // 
-            this.lblPublisher.AutoSize = true;
-            this.lblPublisher.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblPublisher.Location = new System.Drawing.Point(3, 469);
-            this.lblPublisher.Name = "lblPublisher";
-            this.lblPublisher.Size = new System.Drawing.Size(120, 50);
-            this.lblPublisher.TabIndex = 35;
-            this.lblPublisher.Text = "Publisher: ";
+            this.rdBtnSortDateReleased.AutoSize = true;
+            this.rdBtnSortDateReleased.Location = new System.Drawing.Point(8, 42);
+            this.rdBtnSortDateReleased.Name = "rdBtnSortDateReleased";
+            this.rdBtnSortDateReleased.Size = new System.Drawing.Size(133, 17);
+            this.rdBtnSortDateReleased.TabIndex = 3;
+            this.rdBtnSortDateReleased.TabStop = true;
+            this.rdBtnSortDateReleased.Text = "Sort By Date Released";
+            this.rdBtnSortDateReleased.UseVisualStyleBackColor = true;
             // 
-            // txtBxPublisher
+            // rdBtnSortDateAdded
             // 
-            this.txtBxPublisher.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtBxPublisher.Location = new System.Drawing.Point(129, 472);
-            this.txtBxPublisher.Name = "txtBxPublisher";
-            this.txtBxPublisher.Size = new System.Drawing.Size(332, 20);
-            this.txtBxPublisher.TabIndex = 36;
+            this.rdBtnSortDateAdded.AutoSize = true;
+            this.rdBtnSortDateAdded.Location = new System.Drawing.Point(8, 17);
+            this.rdBtnSortDateAdded.Name = "rdBtnSortDateAdded";
+            this.rdBtnSortDateAdded.Size = new System.Drawing.Size(119, 17);
+            this.rdBtnSortDateAdded.TabIndex = 0;
+            this.rdBtnSortDateAdded.TabStop = true;
+            this.rdBtnSortDateAdded.Text = "Sort By Date Added";
+            this.rdBtnSortDateAdded.UseVisualStyleBackColor = true;
+            this.rdBtnSortDateAdded.CheckedChanged += new System.EventHandler(this.SearchComic_CriteriaSearchEvent);
             // 
-            // lblAvgRating
+            // txtBxSearchComic
             // 
-            this.lblAvgRating.AutoSize = true;
-            this.lblAvgRating.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.lblAvgRating.Location = new System.Drawing.Point(332, 159);
-            this.lblAvgRating.Name = "lblAvgRating";
-            this.lblAvgRating.Size = new System.Drawing.Size(87, 13);
-            this.lblAvgRating.TabIndex = 31;
-            this.lblAvgRating.Text = "Average Rating: ";
-            this.lblAvgRating.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.lblAvgRating.Visible = false;
+            this.txtBxSearchComic.Location = new System.Drawing.Point(5, 258);
+            this.txtBxSearchComic.Name = "txtBxSearchComic";
+            this.txtBxSearchComic.Size = new System.Drawing.Size(218, 20);
+            this.txtBxSearchComic.TabIndex = 3;
+            this.txtBxSearchComic.TextChanged += new System.EventHandler(this.SearchComic_CriteriaSearchEvent);
             // 
-            // lblViewCount
+            // grpBxSearchComic
             // 
-            this.lblViewCount.AutoSize = true;
-            this.lblViewCount.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.lblViewCount.Location = new System.Drawing.Point(332, 193);
-            this.lblViewCount.Name = "lblViewCount";
-            this.lblViewCount.Size = new System.Drawing.Size(63, 13);
-            this.lblViewCount.TabIndex = 32;
-            this.lblViewCount.Text = "# of Views: ";
-            this.lblViewCount.Visible = false;
+            this.grpBxSearchComic.Controls.Add(this.rdBtnGenre);
+            this.grpBxSearchComic.Controls.Add(this.rdBtnPublisher);
+            this.grpBxSearchComic.Controls.Add(this.chkBxSearchComicMatchCase);
+            this.grpBxSearchComic.Controls.Add(this.rdBtnAuthors);
+            this.grpBxSearchComic.Controls.Add(this.rdBtnComicHeaders);
+            this.grpBxSearchComic.Location = new System.Drawing.Point(6, 6);
+            this.grpBxSearchComic.Name = "grpBxSearchComic";
+            this.grpBxSearchComic.Size = new System.Drawing.Size(218, 160);
+            this.grpBxSearchComic.TabIndex = 2;
+            this.grpBxSearchComic.TabStop = false;
+            this.grpBxSearchComic.Text = "Search Options";
+            // 
+            // rdBtnGenre
+            // 
+            this.rdBtnGenre.AutoSize = true;
+            this.rdBtnGenre.Location = new System.Drawing.Point(6, 69);
+            this.rdBtnGenre.Name = "rdBtnGenre";
+            this.rdBtnGenre.Size = new System.Drawing.Size(107, 17);
+            this.rdBtnGenre.TabIndex = 5;
+            this.rdBtnGenre.TabStop = true;
+            this.rdBtnGenre.Text = "Filter using Genre";
+            this.rdBtnGenre.UseVisualStyleBackColor = true;
+            this.rdBtnGenre.CheckedChanged += new System.EventHandler(this.SearchComic_CriteriaSearchEvent);
+            // 
+            // rdBtnPublisher
+            // 
+            this.rdBtnPublisher.AutoSize = true;
+            this.rdBtnPublisher.Location = new System.Drawing.Point(6, 96);
+            this.rdBtnPublisher.Name = "rdBtnPublisher";
+            this.rdBtnPublisher.Size = new System.Drawing.Size(121, 17);
+            this.rdBtnPublisher.TabIndex = 4;
+            this.rdBtnPublisher.TabStop = true;
+            this.rdBtnPublisher.Text = "Filter using Publisher";
+            this.rdBtnPublisher.UseVisualStyleBackColor = true;
+            this.rdBtnPublisher.CheckedChanged += new System.EventHandler(this.SearchComic_CriteriaSearchEvent);
+            // 
+            // chkBxSearchComicMatchCase
+            // 
+            this.chkBxSearchComicMatchCase.AutoSize = true;
+            this.chkBxSearchComicMatchCase.Location = new System.Drawing.Point(6, 129);
+            this.chkBxSearchComicMatchCase.Name = "chkBxSearchComicMatchCase";
+            this.chkBxSearchComicMatchCase.Size = new System.Drawing.Size(83, 17);
+            this.chkBxSearchComicMatchCase.TabIndex = 2;
+            this.chkBxSearchComicMatchCase.Text = "Match Case";
+            this.chkBxSearchComicMatchCase.UseVisualStyleBackColor = true;
+            this.chkBxSearchComicMatchCase.CheckedChanged += new System.EventHandler(this.SearchComic_CriteriaSearchEvent);
+            // 
+            // rdBtnAuthors
+            // 
+            this.rdBtnAuthors.AutoSize = true;
+            this.rdBtnAuthors.Location = new System.Drawing.Point(6, 43);
+            this.rdBtnAuthors.Name = "rdBtnAuthors";
+            this.rdBtnAuthors.Size = new System.Drawing.Size(109, 17);
+            this.rdBtnAuthors.TabIndex = 1;
+            this.rdBtnAuthors.TabStop = true;
+            this.rdBtnAuthors.Text = "Filter using Author";
+            this.rdBtnAuthors.UseVisualStyleBackColor = true;
+            this.rdBtnAuthors.CheckedChanged += new System.EventHandler(this.SearchComic_CriteriaSearchEvent);
+            // 
+            // rdBtnComicHeaders
+            // 
+            this.rdBtnComicHeaders.AutoSize = true;
+            this.rdBtnComicHeaders.Location = new System.Drawing.Point(6, 19);
+            this.rdBtnComicHeaders.Name = "rdBtnComicHeaders";
+            this.rdBtnComicHeaders.Size = new System.Drawing.Size(168, 17);
+            this.rdBtnComicHeaders.TabIndex = 0;
+            this.rdBtnComicHeaders.TabStop = true;
+            this.rdBtnComicHeaders.Text = "Filter using Title/Subtitle/Issue";
+            this.rdBtnComicHeaders.UseVisualStyleBackColor = true;
+            this.rdBtnComicHeaders.CheckedChanged += new System.EventHandler(this.SearchComic_CriteriaSearchEvent);
+            // 
+            // dateTimer
+            // 
+            this.dateTimer.Enabled = true;
+            this.dateTimer.Tick += new System.EventHandler(this.dateTimer_Tick);
             // 
             // Admin
             // 
@@ -1023,6 +993,10 @@
             this.flowLayoutPanelUsers.ResumeLayout(false);
             this.tbPgComics.ResumeLayout(false);
             this.tbPgComics.PerformLayout();
+            this.flowLayoutPanel1.ResumeLayout(false);
+            this.tblLayoutPanelComicinfo.ResumeLayout(false);
+            this.tblLayoutPanelComicinfo.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picBxComicCover)).EndInit();
             this.grpBxAdminInfo.ResumeLayout(false);
             this.grpBxAdminInfo.PerformLayout();
             this.grpBxDate.ResumeLayout(false);
@@ -1034,16 +1008,10 @@
             this.grpBxSearchUserOptions.PerformLayout();
             this.tbPgSearchComic.ResumeLayout(false);
             this.tbPgSearchComic.PerformLayout();
-            this.grpBxSearchComic.ResumeLayout(false);
-            this.grpBxSearchComic.PerformLayout();
-            this.tblLayoutPanelComicinfo.ResumeLayout(false);
-            this.tblLayoutPanelComicinfo.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picBxComicCover)).EndInit();
-            this.flowLayoutPanel1.ResumeLayout(false);
-            this.grpBxSortOrder.ResumeLayout(false);
-            this.grpBxSortOrder.PerformLayout();
             this.grpBxSortOptions.ResumeLayout(false);
             this.grpBxSortOptions.PerformLayout();
+            this.grpBxSearchComic.ResumeLayout(false);
+            this.grpBxSearchComic.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -1091,8 +1059,8 @@
         private System.Windows.Forms.TextBox txtBxSearchComic;
         private System.Windows.Forms.GroupBox grpBxSearchComic;
         private System.Windows.Forms.CheckBox chkBxSearchComicMatchCase;
-        private System.Windows.Forms.RadioButton radioButton1;
-        private System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.RadioButton rdBtnAuthors;
+        private System.Windows.Forms.RadioButton rdBtnComicHeaders;
         private System.Windows.Forms.TableLayoutPanel tblLayoutPanelComicinfo;
         private System.Windows.Forms.Label lblAuthors;
         private System.Windows.Forms.Label lblComicTitle;
@@ -1117,11 +1085,7 @@
         private System.Windows.Forms.TextBox txtBxComicTitle;
         private System.Windows.Forms.ColumnHeader colSavedComicName;
         private System.Windows.Forms.ColumnHeader colAvailableComicBookName;
-        private System.Windows.Forms.GroupBox grpBxSortOrder;
-        private System.Windows.Forms.RadioButton rdBtnSortDescending;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.RadioButton rdBtnSortAscending;
-        private System.Windows.Forms.RadioButton radioButton4;
+        private System.Windows.Forms.RadioButton rdBtnPublisher;
         private System.Windows.Forms.GroupBox grpBxSortOptions;
         private System.Windows.Forms.CheckBox checkBox2;
         private System.Windows.Forms.RadioButton rdBtnSortDateReleased;
@@ -1130,5 +1094,6 @@
         private System.Windows.Forms.TextBox txtBxPublisher;
         private System.Windows.Forms.Label lblViewCount;
         private System.Windows.Forms.Label lblAvgRating;
+        private System.Windows.Forms.RadioButton rdBtnGenre;
     }
 }
