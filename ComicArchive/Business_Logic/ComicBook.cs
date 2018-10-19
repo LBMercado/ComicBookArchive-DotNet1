@@ -14,8 +14,8 @@ namespace ComicArchive.Business_Logic
     {
         //data members
         private string[] pagePath; //paths of each page image in comic, sorted in order based on page number
-        private string comicPath; //path of the comic book directory
-        private string archivePath; //path to the .cbz/.cbr comic book
+        private string comicPath; //path of the comic book directory (cached)
+        private string archivePath; //path to the .cbz/.cbr comic book (archive)
 
         public ComicBook()
         {
@@ -24,7 +24,7 @@ namespace ComicArchive.Business_Logic
             ComicDateAdded = ComicDateReleased = DateTime.Now;
             Publisher = ComicSynopsis = ComicGenre = "";
             ComicAuthors = null;
-            AvgRating = 0.0F;
+            Rating = 0.0F;
             ViewCount = PageCount = 0;
         }
 
@@ -55,7 +55,7 @@ namespace ComicArchive.Business_Logic
                 //throw an error if file is not an image
                 else if (!ImageChecker.IsImageExtension(Path.GetExtension(pagePath[index])))
                 {
-                    InvalidImage exc = new InvalidImage("Specified file is not an image: " + pagePath[index]);
+                    InvalidImageException exc = new InvalidImageException("Specified file is not an image: " + pagePath[index]);
                     throw exc;
                 }
                 //path has been verified as an image
@@ -74,13 +74,13 @@ namespace ComicArchive.Business_Logic
         /// range is from 0 -> PageCount - 1
         /// </param>
         /// <returns></returns>
-        /// <exception cref="ComicArchivePagePathsNotSet"></exception>
+        /// <exception cref="ComicArchivePagePathsNotSetException"></exception>
         /// <exception cref="IndexOutOfRangeException"></exception>
         public string GetPagePath(int pageIndex)
         {
             if (comicPath == "")
             {
-                ComicArchivePagePathsNotSet exc = new ComicArchivePagePathsNotSet("No comic archive path has been set yet.");
+                ComicArchivePagePathsNotSetException exc = new ComicArchivePagePathsNotSetException("No comic archive path has been set yet.");
                 throw exc;
             }
 
@@ -94,7 +94,16 @@ namespace ComicArchive.Business_Logic
         }
 
         /// <summary>
-        /// set the path of the comic book directory
+        /// set the page count manually instead of the SetComicPath method,
+        /// use sparingly
+        /// </summary>
+        public void Override_SetPageCount(int pgCount)
+        {
+            PageCount = pgCount;
+        }
+
+        /// <summary>
+        /// set the path of the comic book directory (cached)
         /// </summary>
         /// <param name="comicPath">
         /// path specifying the location of the comic book directory containing the images of the comic book
@@ -116,6 +125,12 @@ namespace ComicArchive.Business_Logic
             SetPagePaths(fileList);
         }
 
+        /// <summary>
+        /// set the path of the comic book archive
+        /// </summary>
+        /// <param name="archivePath">
+        /// filename and path to the cbz/cbr comic book archive
+        /// </param>
         public void SetArchivePath(string archivePath)
         {
             if (File.Exists(archivePath))
@@ -147,6 +162,19 @@ namespace ComicArchive.Business_Logic
         public string GetArchivePath()
         {
             return archivePath;
+        }
+
+        /// <summary>
+        /// rates the comic book
+        /// </summary>
+        public void RateComicBook(float rating)
+        {
+            //succeeding ratings
+            if (ViewCount > 1)
+                Rating = (Rating + rating) / ViewCount;
+            //first rating
+            else
+                Rating = rating;
         }
 
         /// <summary>
@@ -190,9 +218,9 @@ namespace ComicArchive.Business_Logic
         public string ComicGenre { get; set; }
 
         /// <summary>
-        /// average rating of the comic book
+        /// rating of the comic book
         /// </summary>
-        public float AvgRating { get; set; }
+        public float Rating { get; protected set; }
 
         /// <summary>
         /// number of user views on this comic book
@@ -209,38 +237,4 @@ namespace ComicArchive.Business_Logic
         /// </summary>
         public int PageCount { get; private set; }
     }
-
-    public class ImageChecker
-    {
-        private static readonly string[] _validExtensions = { ".jpg", ".bmp", ".gif", ".png", ".jpeg" }; //  etc
-
-        public static bool IsImageExtension(string ext)
-        {
-            return _validExtensions.Contains(ext.ToLower(), StringComparer.OrdinalIgnoreCase);
-        }
-    }
-
-    //START
-    //custom defined exception classes for easier debugging
-    public class InvalidImage : Exception
-    {
-        public InvalidImage() { }
-        public InvalidImage(string message)
-        : base(message) { }
-    }
-
-    public class InvalidComicArchive : Exception
-    {
-        public InvalidComicArchive() { }
-        public InvalidComicArchive(string message)
-        : base(message) { }
-    }
-
-    public class ComicArchivePagePathsNotSet : Exception
-    {
-        public ComicArchivePagePathsNotSet() { }
-        public ComicArchivePagePathsNotSet(string message)
-        : base(message) { }
-    }
-    //END
 }

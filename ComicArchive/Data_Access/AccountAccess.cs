@@ -19,6 +19,9 @@ namespace ComicArchive.Data_Access
         //data members
         private string username, password;
         private int identifier;
+        // identifier:
+        // first 4 digits = year
+        // last 6 digits = account number
 
         /// <summary>
         /// Provides a means of setting and accessing an XML accounts file.
@@ -63,11 +66,21 @@ namespace ComicArchive.Data_Access
                 }
             }
 
-            // id format:
-            // first 4 digits = year
-            // last 6 digits = account number
             username = "";
             password = "";
+        }
+
+        /// <summary>
+        /// creates the data directory if it doesn't exist yet
+        /// and initializes an accounts xml file within it
+        /// </summary>
+        public new void CreateDataDirectory()
+        {
+            XDocument xdocument;
+            Directory.CreateDirectory(root);
+
+            xdocument = new XDocument(new XElement("Accounts"));
+            xdocument.Save(filePath);
         }
 
         /// <summary>
@@ -253,10 +266,55 @@ namespace ComicArchive.Data_Access
         }
 
         /// <summary>
-        /// Gets the actual account of the set account
+        /// Gets the User account associated with the given User id
         /// </summary>
         /// <returns>
-        /// the actual admin if successful, null otherwise
+        /// User object if successful, null otherwise
+        /// </returns>
+        /// <exception cref="FileNotFoundException"></exception>
+        public User GetUserAccount(int id)
+        {
+            //check if path specified exists, throw an error if it is not valid
+            if (PathIsValid())
+            {
+                XDocument xDocument = XDocument.Load(filePath);
+
+                foreach (XElement account in xDocument.Descendants("Account"))
+                {
+                    //get required elements
+                    XElement idRead = account.Element("ID");
+                    XElement userNameRead = account.Element("Username");
+                    XElement passWordRead = account.Element("Password");
+
+                    //check if id is a match
+                    if (idRead.Value == id.ToString())
+                    {
+                        User user = new User(Convert.ToInt32(idRead.Value));
+                        {
+                            user.Username = userNameRead.Value;
+                            user.Password = passWordRead.Value;
+                        }
+                        return user;
+                    }
+                }
+                return null;
+            }
+            else
+            {
+                Trace.WriteLine("Set Path = " + "<" + filePath + ">" + " is invalid, cannot proceed with account verification.");
+                FileNotFoundException exc = new FileNotFoundException
+                    (
+                    "Set Path = " + "<" + filePath + ">" + " is invalid, cannot proceed with account verification."
+                    );
+                throw exc;
+            }
+        }
+
+        /// <summary>
+        /// Gets the Admin account associated with the set account
+        /// </summary>
+        /// <returns>
+        /// the actual admin if successfull, null otherwise
         /// </returns>
         public Admin GetAdminAccount()
         {
@@ -300,7 +358,8 @@ namespace ComicArchive.Data_Access
         }
 
         /// <summary>
-        /// Writes or overwrites the set user account to the XML accounts file.
+        /// Writes the set user account to the XML accounts file.
+        /// Updates the account credentials except the username if it already exists.
         /// </summary>
         /// <exception cref="FileNotFoundException"></exception>
         public void WriteUserAccount()
@@ -351,7 +410,8 @@ namespace ComicArchive.Data_Access
         }
 
         /// <summary>
-        /// Writes or overwrites the set admin account to the XML accounts file.
+        /// Writes the set admin account to the XML accounts file.
+        /// Updates the account credentials except the username if it already exists.
         /// </summary>
         /// <exception cref="FileNotFoundException"></exception>
         public void WriteAdminAccount()
@@ -462,10 +522,10 @@ namespace ComicArchive.Data_Access
         }
 
         /// <summary>
-        /// updates the user account associated with the given ID in the XML accounts file using the set account
+        /// Updates the User account associated with the given ID in the XML accounts file using the set account
         /// </summary>
         /// <param name="userId">
-        /// id of the user to update
+        /// id of the User to update
         /// </param>
         /// <returns>
         /// true if successful, false otherwise
@@ -522,7 +582,7 @@ namespace ComicArchive.Data_Access
         }
 
         /// <summary>
-        /// reads the user accounts from the accounts XML file
+        /// reads all the User accounts from the accounts XML file
         /// </summary>
         /// <returns>
         /// array of User objects
@@ -531,6 +591,7 @@ namespace ComicArchive.Data_Access
         {
             if (PathIsValid())
             {
+
                 XDocument xDocument = XDocument.Load(filePath);
                 User[] userList = new User[UserCount];
                 int index = 0;
@@ -568,7 +629,7 @@ namespace ComicArchive.Data_Access
         }
 
         /// <summary>
-        /// reads the admin accounts from the accounts XML file
+        /// reads all the Admin accounts from the accounts XML file
         /// </summary>
         /// <returns>
         /// array of Admin objects

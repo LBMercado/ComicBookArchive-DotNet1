@@ -121,7 +121,7 @@ namespace ComicArchive
                         MessageBox.Show("Admin verified, welcome " + adminAccount.Username + '!', "Login", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         //admin window here
-                        User_Interface.Admin ui_admin = new User_Interface.Admin(this, adminAccount);
+                        User_Interface.AdminUI ui_admin = new User_Interface.AdminUI(this, adminAccount);
                         txtBxUser.ResetText();
                         txtBxPass.ResetText();
                         this.Hide();

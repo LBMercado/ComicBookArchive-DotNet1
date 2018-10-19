@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -49,26 +50,36 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Business_Logic\Admin.cs" />
+    <Compile Include="Business_Logic\Bookmark.cs" />
+    <Compile Include="Business_Logic\ComicLibrary.cs" />
+    <Compile Include="Business_Logic\UserComicBook.cs" />
+    <Compile Include="Data_Access\ComicLibraryAccess.cs" />
+    <Compile Include="Exceptions\ComicArchivePagePathsNotSetException.cs" />
     <Compile Include="Business_Logic\ComicBook.cs" />
+    <Compile Include="Business_Logic\ImageChecker.cs" />
+    <Compile Include="Exceptions\InvalidComicArchiveException.cs" />
+    <Compile Include="Exceptions\InvalidComicArchivePathException.cs" />
+    <Compile Include="Exceptions\InvalidImageException.cs" />
     <Compile Include="Data_Access\AccountAccess.cs" />
     <Compile Include="Data_Access\ComicAccess.cs" />
-    <Compile Include="User_Interface\Admin.cs">
+    <Compile Include="Exceptions\UserDoesNotExistException.cs" />
+    <Compile Include="User_Interface\AdminUI.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="User_Interface\Admin.Designer.cs">
-      <DependentUpon>Admin.cs</DependentUpon>
+    <Compile Include="User_Interface\AdminUI.Designer.cs">
+      <DependentUpon>AdminUI.cs</DependentUpon>
     </Compile>
-    <Compile Include="User_Interface\Admin_AddUser.cs">
+    <Compile Include="User_Interface\AdminUI_AddUser.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="User_Interface\Admin_AddUser.Designer.cs">
-      <DependentUpon>Admin_AddUser.cs</DependentUpon>
+    <Compile Include="User_Interface\AdminUI_AddUser.Designer.cs">
+      <DependentUpon>AdminUI_AddUser.cs</DependentUpon>
     </Compile>
-    <Compile Include="User_Interface\Admin_ModifyUser.cs">
+    <Compile Include="User_Interface\AdminUI_ModifyUser.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="User_Interface\Admin_ModifyUser.Designer.cs">
-      <DependentUpon>Admin_ModifyUser.cs</DependentUpon>
+    <Compile Include="User_Interface\AdminUI_ModifyUser.Designer.cs">
+      <DependentUpon>AdminUI_ModifyUser.cs</DependentUpon>
     </Compile>
     <Compile Include="User_Interface\ProgressDialog.cs">
       <SubType>Form</SubType>
@@ -77,60 +88,60 @@
       <DependentUpon>ProgressDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Data_Access\ComicReader.cs" />
-    <Compile Include="User_Interface\ComicView.cs">
+    <Compile Include="User_Interface\ComicViewUI.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="User_Interface\ComicView.Designer.cs">
-      <DependentUpon>ComicView.cs</DependentUpon>
+    <Compile Include="User_Interface\ComicViewUI.Designer.cs">
+      <DependentUpon>ComicViewUI.cs</DependentUpon>
     </Compile>
     <Compile Include="Data_Access\DataAccess.cs" />
-    <Compile Include="User_Interface\Login.cs">
+    <Compile Include="User_Interface\LoginUI.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="User_Interface\Login.Designer.cs">
-      <DependentUpon>Login.cs</DependentUpon>
+    <Compile Include="User_Interface\LoginUI.Designer.cs">
+      <DependentUpon>LoginUI.cs</DependentUpon>
     </Compile>
-    <Compile Include="User_Interface\MainMenu.cs">
+    <Compile Include="User_Interface\MainMenuUI.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="User_Interface\MainMenu.Designer.cs">
-      <DependentUpon>MainMenu.cs</DependentUpon>
+    <Compile Include="User_Interface\MainMenuUI.Designer.cs">
+      <DependentUpon>MainMenuUI.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Business_Logic\User.cs" />
-    <Compile Include="User_Interface\ResetPassword.cs">
+    <Compile Include="User_Interface\ResetPasswordUI.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="User_Interface\ResetPassword.Designer.cs">
-      <DependentUpon>ResetPassword.cs</DependentUpon>
+    <Compile Include="User_Interface\ResetPasswordUI.Designer.cs">
+      <DependentUpon>ResetPasswordUI.cs</DependentUpon>
     </Compile>
-    <Compile Include="User_Interface\ResetUsername.cs">
+    <Compile Include="User_Interface\ResetUsernameUI.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="User_Interface\ResetUsername.Designer.cs">
-      <DependentUpon>ResetUsername.cs</DependentUpon>
+    <Compile Include="User_Interface\ResetUsernameUI.Designer.cs">
+      <DependentUpon>ResetUsernameUI.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="User_Interface\Admin.resx">
-      <DependentUpon>Admin.cs</DependentUpon>
+    <EmbeddedResource Include="User_Interface\AdminUI.resx">
+      <DependentUpon>AdminUI.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="User_Interface\Admin_AddUser.resx">
-      <DependentUpon>Admin_AddUser.cs</DependentUpon>
+    <EmbeddedResource Include="User_Interface\AdminUI_AddUser.resx">
+      <DependentUpon>AdminUI_AddUser.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="User_Interface\Admin_ModifyUser.resx">
-      <DependentUpon>Admin_ModifyUser.cs</DependentUpon>
+    <EmbeddedResource Include="User_Interface\AdminUI_ModifyUser.resx">
+      <DependentUpon>AdminUI_ModifyUser.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="User_Interface\ProgressDialog.resx">
       <DependentUpon>ProgressDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="User_Interface\ComicView.resx">
-      <DependentUpon>ComicView.cs</DependentUpon>
+    <EmbeddedResource Include="User_Interface\ComicViewUI.resx">
+      <DependentUpon>ComicViewUI.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="User_Interface\Login.resx">
-      <DependentUpon>Login.cs</DependentUpon>
+    <EmbeddedResource Include="User_Interface\LoginUI.resx">
+      <DependentUpon>LoginUI.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="User_Interface\MainMenu.resx">
-      <DependentUpon>MainMenu.cs</DependentUpon>
+    <EmbeddedResource Include="User_Interface\MainMenuUI.resx">
+      <DependentUpon>MainMenuUI.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -141,13 +152,12 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="User_Interface\ResetPassword.resx">
-      <DependentUpon>ResetPassword.cs</DependentUpon>
+    <EmbeddedResource Include="User_Interface\ResetPasswordUI.resx">
+      <DependentUpon>ResetPasswordUI.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="User_Interface\ResetUsername.resx">
-      <DependentUpon>ResetUsername.cs</DependentUpon>
+    <EmbeddedResource Include="User_Interface\ResetUsernameUI.resx">
+      <DependentUpon>ResetUsernameUI.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="ComicArchive.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

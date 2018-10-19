@@ -1,6 +1,6 @@
 ﻿namespace ComicArchive.User_Interface
 {
-    partial class ResetPassword
+    partial class ResetPasswordUI
     {
         /// <summary>
         /// Required designer variable.

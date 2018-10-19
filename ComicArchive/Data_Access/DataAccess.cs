@@ -88,8 +88,33 @@ namespace ComicArchive.Data_Access
             XDocument xdocument;
             Directory.CreateDirectory(root);
 
-            xdocument = new XDocument(new XElement("Accounts"));
+            xdocument = new XDocument(new XElement("Records"));
             xdocument.Save(filePath);
+        }
+
+        /// <summary>
+        /// Removes the XML record that is within the data directory
+        /// </summary>
+        /// <returns>
+        /// true if successful, false otherwise
+        /// </returns>
+        public bool RemoveDataRecord()
+        {
+            try
+            {
+                File.Delete(filePath);
+            }
+            catch(DirectoryNotFoundException exc)
+            {
+                Trace.WriteLine("Directory specified by filePath: <" + filePath + "> is invalid.");
+                return false;
+            }
+            catch(UnauthorizedAccessException exc)
+            {
+                Trace.WriteLine("File specified by filePath: <" + filePath + "> cannot be access.\n Permission denied.");
+                return false;
+            }
+            return true;
         }
     }
 }

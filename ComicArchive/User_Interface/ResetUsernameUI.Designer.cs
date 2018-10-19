@@ -1,6 +1,6 @@
 ﻿namespace ComicArchive.User_Interface
 {
-    partial class ResetUsername
+    partial class ResetUsernameUI
     {
         /// <summary>
         /// Required designer variable.

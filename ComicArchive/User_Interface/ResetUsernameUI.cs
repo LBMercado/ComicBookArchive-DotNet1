@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ComicArchive.Data_Access;
 using System.Diagnostics;
-using static ComicArchive.User_Interface.Admin;
+using static ComicArchive.User_Interface.AdminUI;
 
 namespace ComicArchive.User_Interface
 {
-    public partial class ResetUsername : Form
+    public partial class ResetUsernameUI : Form
     {
         //data members
         private Business_Logic.Admin adminUser;
@@ -21,7 +21,7 @@ namespace ComicArchive.User_Interface
         public event UsernameChangedHandler UsernameChangedEvent;
         bool usernameChanged;
 
-        public ResetUsername(Business_Logic.Admin adminUser, AccountAccess acctReader)
+        public ResetUsernameUI(Business_Logic.Admin adminUser, AccountAccess acctReader)
         {
             InitializeComponent();
 

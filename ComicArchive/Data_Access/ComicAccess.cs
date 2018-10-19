@@ -12,7 +12,6 @@ using SevenZip;
 
 namespace ComicArchive.Data_Access
 {
-
     /// <summary>
     /// provides a means of accessing and setting/reading comic book information
     /// </summary>
@@ -23,7 +22,7 @@ namespace ComicArchive.Data_Access
         private string tempPath;
 
         /// <summary>
-        /// provides a means of accessing and setting/reading comic book information
+        /// provides a means of accessing and setting/reading comic book records
         /// </summary>
         /// <param name="comicBookRecordFileName">
         /// name of the XML file containing the comic book records
@@ -45,15 +44,13 @@ namespace ComicArchive.Data_Access
                 ReadComicBookRecords();
                 //cache the covers of the comic books
                 ExtractCoversToCache();
-
             }
-            //else, initialize new comic book xml file, zero comic books imported
+            //else, initialize new comic book records XML file, zero comic books imported
             else
             {
                 CreateDataDirectory();
                 ComicBookCount = 0;
             }
-
         }
 
         /// <summary>
@@ -69,19 +66,18 @@ namespace ComicArchive.Data_Access
         }
 
         /// <summary>
-        /// extracts the first pages of the comics in the list to cache
+        /// extracts the first page of the comics in the list to cache
         /// </summary>
         private void ExtractCoversToCache()
         {
-            //direct the program to the dependency: 7z.dll
+            //direct the program to the dependency: 7z.dll (7z64.dll for 64-bit ver.)
             SevenZipBase.SetLibraryPath(Path.Combine(Environment.CurrentDirectory, "7z.dll"));
 
-            //do for each comic book
+            //extract cover pages of all comic books in the list
             foreach (var comicBook in comicBookList)
             {
                 string archivePath = comicBook.GetArchivePath();
                 //check if cover has been cached already
-                //skip if so
                 bool fileExists = false;
                 try
                 {
@@ -92,22 +88,32 @@ namespace ComicArchive.Data_Access
                 {
                     Trace.WriteLine("File pertaining to <" + Path.GetFileNameWithoutExtension(archivePath) + "> does not exist. Proceeding to extract.");
                 }
-                    
+                //skip if cover page has already been extracted
                 if (fileExists)
                     continue;
-                
+
+                //else,
                 //extract archive to temporary folder
                 using (var extractor = new SevenZipExtractor(archivePath))
                 {
-                    //get the sorted archive file list to get the first image, no directories
-                    var fileNames = extractor.ArchiveFileData.Where(file => !file.IsDirectory);
+                    //get the sorted archive file list to get the first image
+                    //verify that the cover page is an image
+                    var fileNames = extractor.ArchiveFileData
+                        .Where(
+                        file => ImageChecker.IsImageExtension(
+                            Path.GetExtension(file.FileName)
+                            )
+                            );
                     fileNames = fileNames.OrderBy(file => file.FileName);
+
+                    //set the page count
+                    comicBook.Override_SetPageCount(fileNames.Count());
 
                     //extract first image only
                     extractor.ExtractFiles(tempPath, fileNames.First().Index);
                     string newFileName = Path.Combine(tempPath, Path.GetFileNameWithoutExtension(archivePath)
                         + Path.GetExtension(fileNames.First().FileName));
-                    //rename file
+                    //rename file to name of archive file
                     File.Move(Path.Combine(tempPath, fileNames.First().FileName), newFileName);
 
                     //have to make sure the image is not within another directory
@@ -131,10 +137,6 @@ namespace ComicArchive.Data_Access
                             Directory.Delete(dir);
                         }
                     }
-                    else
-                    {
-                        //rename the file
-                    }
                 }
             }
         }
@@ -154,9 +156,9 @@ namespace ComicArchive.Data_Access
                 XDocument xDocument = XDocument.Load(filePath);
 
                 //remove invalid records first if there are any
-                var nodes = xDocument.Descendants("ComicBook").Where(el => !File.Exists(el.Element("ArchivePath").Value)).ToList();
+                var InvalidElement = xDocument.Descendants("ComicBook").Where(el => !File.Exists(el.Element("ArchivePath").Value)).ToList();
 
-                foreach (var node in nodes)
+                foreach (var node in InvalidElement)
                     node.Remove();
 
                 foreach (XElement bookRecord in xDocument.Descendants("ComicBook"))
@@ -199,7 +201,7 @@ namespace ComicArchive.Data_Access
                     comicBookRead.ComicGenre = genreRead.Value;
                     comicBookRead.Publisher = publisherRead.Value;
                     comicBookRead.ViewCount = int.Parse(viewCountRead.Value);
-                    comicBookRead.AvgRating = float.Parse(avgRatingRead.Value);
+                    comicBookRead.RateComicBook(float.Parse(avgRatingRead.Value));
 
                     if (AuthorRead.Count() != 0)
                         comicBookRead.ComicAuthors = AuthorRead.ToArray();
@@ -226,12 +228,18 @@ namespace ComicArchive.Data_Access
         }
 
         /// <summary>
-        /// writes a new comic book record to the comic book records XML file, this does not check for existing comic book records
+        /// writes a new comic book record to the comic book records XML file, 
+        /// if it doesn't exist yet, based on its archivePath
         /// </summary>
         public void WriteComicBookRecord(ComicBook newComicBook)
         {
             if (PathIsValid())
             {
+                //check if it already exists, ignore write if it does
+                if (ComicBookRecordExists(newComicBook.GetArchivePath()))
+                {
+                    return;
+                }
                 //load the comic book record XML file
                 XDocument xDocument = XDocument.Load(filePath);
 
@@ -256,7 +264,7 @@ namespace ComicArchive.Data_Access
                         new XElement("Genre", newComicBook.ComicGenre),
                         new XElement("Publisher", newComicBook.Publisher),
                         new XElement("View_Count", newComicBook.ViewCount.ToString()),
-                        new XElement("Avg_Rating", newComicBook.AvgRating.ToString()),
+                        new XElement("Avg_Rating", newComicBook.Rating.ToString()),
                         newAuthors
                         );
                 //add to root of comic book record XML file
@@ -265,7 +273,7 @@ namespace ComicArchive.Data_Access
                 //save the changes made to the comic book record XML file
                 xDocument.Save(filePath);
 
-                //update records on this instance
+                //update current records to reflect changes
                 ComicBookCount++;
                 comicBookList.Add(newComicBook);
                 ExtractCoversToCache();
@@ -336,7 +344,7 @@ namespace ComicArchive.Data_Access
                         genreRead.Value = updatedComicBook.ComicGenre;
                         publisherRead.Value = updatedComicBook.Publisher;
                         viewCountRead.Value = updatedComicBook.ViewCount.ToString();
-                        avgRatingRead.Value = updatedComicBook.AvgRating.ToString();
+                        avgRatingRead.Value = updatedComicBook.Rating.ToString();
 
                         //remove authors, if not empty
                         if (AuthorsRead.Descendants().Count() != 0)
@@ -351,7 +359,7 @@ namespace ComicArchive.Data_Access
                         //save changes in XML document
                         xDocument.Save(filePath);
 
-                        //re-update records on this instance
+                        //re-update current records to reflect changes
                         ReadComicBookRecords();
 
                         return true;
@@ -403,7 +411,7 @@ namespace ComicArchive.Data_Access
                         //save changes in XML document
                         xDocument.Save(filePath);
 
-                        //re-update records on this instance
+                        //re-update current records to reflect changes
                         ReadComicBookRecords();
                         return true;
                     }
@@ -458,7 +466,7 @@ namespace ComicArchive.Data_Access
         }
 
         /// <summary>
-        /// creates a new comic book record based on the cbz/cbr path specified, does not test for duplicates
+        /// creates a new comic book record based on the cbz/cbr path specified
         /// </summary>
         /// <param name="archivePath">
         /// path to the cbz/cbr archive file
@@ -477,15 +485,9 @@ namespace ComicArchive.Data_Access
 
             if (PathIsValid())
             {
-                //load the comic book record XML file
-                XDocument xDocument = XDocument.Load(filePath);
-
-                //Authors has child nodes
-                XElement newAuthors = new XElement("Authors");
-
                 ComicBook newComicBook = new ComicBook();
 
-                //set init values for newComicBook
+                //set default init values for newComicBook
                 newComicBook.SetArchivePath(archivePath);
                 newComicBook.ComicTitle = Path.GetFileNameWithoutExtension(archivePath);
                 newComicBook.ComicSubTitle = "";
@@ -494,35 +496,12 @@ namespace ComicArchive.Data_Access
                 newComicBook.ComicDateReleased = DateTime.Now;
                 newComicBook.ComicSynopsis = "";
                 newComicBook.ComicGenre = "";
+                newComicBook.ComicAuthors = null;
                 newComicBook.Publisher = "";
                 newComicBook.ViewCount = 0;
-                newComicBook.AvgRating = 0.0f;
+                newComicBook.RateComicBook(0.0f);
 
-                XElement newComicBookRecord = new XElement(
-                    "ComicBook",
-                        new XElement("ArchivePath", archivePath),
-                        new XElement("Title", newComicBook.ComicTitle),
-                        new XElement("Subtitle", newComicBook.ComicSubTitle),
-                        new XElement("Issue", newComicBook.ComicIssue),
-                        new XElement("Date_Added", newComicBook.ComicDateAdded.ToShortDateString()),
-                        new XElement("Date_Released", newComicBook.ComicDateReleased.ToShortDateString()),
-                        new XElement("Synopsis", newComicBook.ComicSynopsis),
-                        new XElement("Genre", newComicBook.ComicGenre),
-                        new XElement("Publisher", newComicBook.Publisher),
-                        new XElement("View_Count", newComicBook.ViewCount.ToString()),
-                        new XElement("Avg_Rating", newComicBook.AvgRating.ToString()),
-                        newAuthors
-                        );
-                //add to root of comic book record XML file
-                xDocument.Root.Add(newComicBookRecord);
-
-                //save the changes made to the comic book record XML file
-                xDocument.Save(filePath);
-
-                //update records on this instance
-                ComicBookCount++;
-                comicBookList.Add(newComicBook);
-                ExtractCoversToCache();
+                WriteComicBookRecord(newComicBook);
             }
             else
             {

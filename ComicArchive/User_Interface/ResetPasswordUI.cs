@@ -7,17 +7,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static ComicArchive.User_Interface.Admin;
+using static ComicArchive.User_Interface.AdminUI;
 
 namespace ComicArchive.User_Interface
 {
-    public partial class ResetPassword : Form
+    public partial class ResetPasswordUI : Form
     {
         //data members
         private string password;
         public event PasswordChangedHandler PasswordChangedEvent;
 
-        public ResetPassword(string password)
+        public ResetPasswordUI(string password)
         {
             InitializeComponent();
             this.password = password;

@@ -10,50 +10,56 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using ComicArchive.Data_Access;
 using System.IO;
+using ComicArchive.Business_Logic;
 
 namespace ComicArchive.User_Interface
 {
-    public partial class Admin : Form
+    public partial class AdminUI : Form
     {
         //data members
         private Login ui_login;
-        private Business_Logic.Admin loggedAdmin;
-        private AccountAccess accountReader;
+        private Admin loggedAdmin;
+        private ComicLibraryAccess accountReader;
         private ComicAccess comicReader;
-        private Business_Logic.Admin[] adminAccts;
-        private Business_Logic.User[] userAccts;
-        private Business_Logic.ComicBook[] comicBooks;
-        private const string accountFileName = "accounts.xml";
-        private const string cbRecordsFileName = "cbInfo.xml";
+        private Admin[] adminAccts;
+        private User[] userAccts;
+        private ComicBook[] comicBooks;
+        private const string accountFileName = @"accounts.xml";
+        private const string cbRecordsFileName = @"cbInfo.xml";
+        private const string cbResourceDirectory = @"Resources/comicbooks";
 
-        public Admin(Login ui_login, Business_Logic.Admin admin)
+        //progress dialog members
+        private ProgressDialog progDialog;
+        private BackgroundWorker bgWorker;
+        bool backgroundProcessDone;
+
+        public AdminUI(Login ui_login, Business_Logic.Admin admin)
         {
             InitializeComponent();
-
             //set data members
             this.ui_login = ui_login;
             this.loggedAdmin = admin;
             lblAdminName.Text = admin.Username;
-            accountReader = new AccountAccess(accountFileName);
+            accountReader = new ComicLibraryAccess(accountFileName);
             comicReader = new ComicAccess(cbRecordsFileName);
+            backgroundProcessDone = true;
 
             //ui setup
             tbCtrlSearch_HideTabPages();
             txtBxDateAdded.ReadOnly = true;
 
             //users tab
-            adminAccts = accountReader.GetAllAdminAccounts();
-            userAccts = accountReader.GetAllUserAccounts();
-            lblUserCount.Text += accountReader.Count.ToString();
+            UserInfo_Refresh();
             tbCtrlSearch_ShowTabPageUser();
 
             //comics tab
-            string comicArchiveDir = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "comicbooks");
+            string comicArchiveDir = Path.Combine(Directory.GetCurrentDirectory(), cbResourceDirectory);
             //create resource directory, as assurance
             Directory.CreateDirectory(comicArchiveDir);
             lstViewAvailableComics_Refresh();
         }
 
+        #region Event Handling
         //START
         //events, event handlers, args, methods
         //1
@@ -96,10 +102,7 @@ namespace ComicArchive.User_Interface
             }
 
             //refresh values to reflect changes
-            adminAccts = accountReader.GetAllAdminAccounts();
-            userAccts = accountReader.GetAllUserAccounts();
-            lstViewUsers_fillValues("", true, false);
-            lblUserCount.Text = "Total Number of Users: " + accountReader.Count.ToString();
+            UserInfo_Refresh();
         }
         //3
         public delegate void UsernameChangedHandler(object sender, UsernameChangedArgs e);
@@ -142,6 +145,11 @@ namespace ComicArchive.User_Interface
             if (e.modifiedUser != null)
             {
                 Trace.WriteLine("UserModified event triggered!\nUser details have been modified!");
+                //refresh values to reflect changes
+                UserInfo_Refresh();
+
+                //reset labels and disable button
+                UserInfo_Enabled(false);
             }
             else
             {
@@ -149,60 +157,143 @@ namespace ComicArchive.User_Interface
             }
 
         }
+        //Progress Reporting for Import Comics
+        public void FileTransfer_ReportProgress(object sender, ProgressArgs e)
+        {
+            progDialog.SetMaximumValueAsync(e.TotalRecords);
+            progDialog.UpdateProgressAsync(e.TotalProcessed);
+            progDialog.SetDescriptionAsync(e.Description);
+            backgroundProcessDone = e.IsDoneProcessing;
+
+            if (backgroundProcessDone)
+                progDialog.BeginInvoke(new Action(() => progDialog.Close()));
+        }
+        public delegate void ReportProgressEventHandler(object sender, ProgressArgs args);
+
+        public event ReportProgressEventHandler ReportProgress;
+
+        public class ProgressArgs : EventArgs
+        {
+            public int TotalProcessed { get; set; }
+            public int TotalRecords { get; set; }
+            public string Description { get; set; }
+            public bool IsDoneProcessing { get; set; }
+        }
         //END
-
-        private void btnSignOut_Click(object sender, EventArgs e)
+        #endregion
+        #region Users Tab
+        private void UserInfo_Refresh()
         {
-            ui_login.Show();
-            this.Close();
+            adminAccts = accountReader.GetAllAdminAccounts();
+            userAccts = accountReader.GetAllUserAccounts();
+            lstViewUsers_FillWithSearchCriteria("", true, false);
+            lblUserCount.Text = "Total Number of Users: " + accountReader.Count.ToString();
         }
 
-        private void Admin_FormClosed(object sender, FormClosedEventArgs e)
+        private void UserInfo_Enabled(bool enabled)
         {
-            if (!ui_login.Visible)
-                ui_login.Close();
-        }
-
-        private void dateTimer_Tick(object sender, EventArgs e)
-        {
-            lblDateToday.Text = DateTime.Now.ToShortDateString();
-            lblRunningTime.Text = DateTime.Now.ToLongTimeString();
-        }
-
-        private void tbCtrlSearch_HideTabPages()
-        {
-            tbCtrlSearch.TabPages.Remove(tbPgSearchUser);
-            tbCtrlSearch.TabPages.Remove(tbPgSearchComic);
-        }
-
-        private void tbCtrlSearch_ShowTabPageUser()
-        {
-            if (!tbCtrlSearch.TabPages.Contains(tbPgSearchUser))
+            //reset or set controls for user info
+            if (!enabled)
             {
-                tbCtrlSearch.TabPages.Add(tbPgSearchUser);
-                rdBtnSearchById.Checked = true;
-                chkBxSearchUserMatchCase.Checked = false;
+                lblUserId.Hide();
+                lblUsername.Hide();
+                lbl_IsAdmin.Hide();
+                lblUserPassword.Hide();
             }
-                
-            if (tbCtrlSearch.TabPages.Contains(tbPgSearchComic))
-                tbCtrlSearch.TabPages.Remove(tbPgSearchComic);
-        }
-
-        private void tbCtrlSearch_ShowTabPageComic()
-        {
-            if (!tbCtrlSearch.TabPages.Contains(tbPgSearchComic))
+            else
             {
-                tbCtrlSearch.TabPages.Add(tbPgSearchComic);
-                rdBtnComicHeaders.Checked = true;
-                chkBxSearchComicMatchCase.Checked = false;
-                rdBtnSortDateAdded.Checked = true;
+                lblUserId.Show();
+                lblUsername.Show();
+                lbl_IsAdmin.Show();
+                lblUserPassword.Show();
             }
-                
-            if (tbCtrlSearch.TabPages.Contains(tbPgSearchUser))
-                tbCtrlSearch.TabPages.Remove(tbPgSearchUser);
+
+            lstViewUserComics.Visible = false;
+            lblSavedComicsCount.Visible = false;
+            btnDeleteUser.Enabled = enabled;
+            btnModifyUser.Enabled = enabled;
         }
 
-        private void lstViewUsers_fillValues(string searchVal, bool filterByUsername, bool useExactMatch)
+        private void UserComics_Show(User userAcc)
+        {
+            lstViewUserComics.Items.Clear();
+            lstViewUserComics.Visible = true;
+            lblSavedComicsCount.Visible = true;
+            ComicLibrary comLib = userAcc.MyComicLibrary;
+
+            //show in list view the imported comics
+            foreach (var com in comLib.GetAllComicBooks())
+            {
+                lstViewUserComics.Items.Add(Path.GetFileName(com.GetArchivePath()));
+            }
+
+            //show quantity of imported comics
+            lblSavedComicsCount.Text = "Num. of Saved Comics: " + comLib.Count;
+        }
+
+        private void lstViewUsers_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //highligh selection made in lstViewUsers
+
+            if (lstViewUsers.SelectedIndices.Count != 0)
+            {
+                Trace.WriteLine("Selection Index Changed: " + lstViewUsers.SelectedIndices[0].ToString());
+                int selectedIndex = lstViewUsers.SelectedIndices[0];
+                string selectedItem = lstViewUsers.Items[selectedIndex].Text;
+
+                //enable the labels and buttons if they aren't yet
+                if (!lblUserId.Visible)
+                    UserInfo_Enabled(true);
+
+                Trace.WriteLine("User list item selected: " + selectedItem);
+
+                //get the corresponding user from the userAccts/adminAccts
+                bool userFound = false;
+                //start with user accounts first
+                foreach (var userAcc in userAccts)
+                {
+                    if (userAcc.Id.ToString() == selectedItem)
+                    {
+                        lblUserId.Text = "User ID: " + userAcc.Id.ToString();
+                        lblUsername.Text = "Username: " + userAcc.Username;
+                        lblUserPassword.Text = "Password: " + userAcc.Password;
+                        lbl_IsAdmin.Text = "Is Admin: " + userAcc.IsAdmin;
+                        //modify button only for users, not admins
+                        btnModifyUser.Enabled = !userAcc.IsAdmin;
+                        //user comics imported only for users
+                        UserComics_Show(userAcc);                        
+                        userFound = true;
+                        break;
+                    }
+                }
+                //if user is already found, no need to check for admin
+                if (!userFound)
+                {
+                    foreach (var adminAcc in adminAccts)
+                    {
+                        if (adminAcc.Id.ToString() == selectedItem)
+                        {
+                            lblUserId.Text = "User ID: " + adminAcc.Id.ToString();
+                            lblUsername.Text = "Username: " + adminAcc.Username;
+                            lblUserPassword.Text = "Password: " + adminAcc.Password;
+                            lbl_IsAdmin.Text = "Is Admin: " + adminAcc.IsAdmin;
+                            btnModifyUser.Enabled = !adminAcc.IsAdmin;
+                            userFound = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            //highlight selection disappeared from lstViewUsers
+            else
+            {
+                Trace.WriteLine("Selection Index Changed: " + "NULL");
+                //reset labels and disable button
+                UserInfo_Enabled(false);
+            }
+        }
+
+        private void lstViewUsers_FillWithSearchCriteria(string searchVal, bool filterByUsername, bool useExactMatch)
         {
             //clear data items in listview
             lstViewUsers.Items.Clear();
@@ -299,38 +390,27 @@ namespace ComicArchive.User_Interface
             }
         }
 
-        private void txtBxSearchUser_TextChanged(object sender, EventArgs e)
+        private void SearchUser_CriteriaSearchEvent(object sender, EventArgs e)
         {
-            lstViewUsers_fillValues(txtBxSearchUser.Text, rdBtnSearchByUsername.Checked, chkBxSearchUserMatchCase.Checked);
+            lstViewUsers_FillWithSearchCriteria(txtBxSearchUser.Text, rdBtnSearchByUsername.Checked, chkBxSearchUserMatchCase.Checked);
             //reset labels and disable delete button
-            lblUserId.Hide();
-            lblUsername.Hide();
-            lbl_IsAdmin.Hide();
-            lblUserPassword.Hide();
-            btnDeleteUser.Enabled = false;
-            btnModifyUser.Enabled = false;
-        }
-
-        private void btnChangePassword_Click(object sender, EventArgs e)
-        {
-            ResetPassword ui_rstPass = new ResetPassword(loggedAdmin.Password);
-            ui_rstPass.PasswordChangedEvent += new PasswordChangedHandler(EventTrigger_ChangePassword);
-            ui_rstPass.ShowDialog();
-        }
-
-        private void tbCtrlAdmin_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (tbCtrlAdmin.SelectedTab == tbPgUsers)
-                tbCtrlSearch_ShowTabPageUser();
-            else
-                tbCtrlSearch_ShowTabPageComic();
+            UserInfo_Enabled(false);
         }
 
         private void btnAddUser_Click(object sender, EventArgs e)
         {
-            Admin_AddUser ui_adminAddUser = new Admin_AddUser(this, accountReader);
+            AdminUI_AddUser ui_adminAddUser = new AdminUI_AddUser(this, accountReader);
             ui_adminAddUser.AddUserEvent += new AddUserHandler(EventTrigger_AddUser);
             ui_adminAddUser.ShowDialog();
+        }
+
+        private void btnModifyUser_Click(object sender, EventArgs e)
+        {
+            int userId = int.Parse(lblUserId.Text.Substring(9));
+
+            AdminUI_ModifyUser ui_modUser = new AdminUI_ModifyUser(userId, accountReader);
+            ui_modUser.UserModifiedEvent += new UserModifiedHandler(EventTrigger_UserModified);
+            ui_modUser.ShowDialog();
         }
 
         private void btnDeleteUser_Click(object sender, EventArgs e)
@@ -367,151 +447,18 @@ namespace ComicArchive.User_Interface
                         MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
                 }
                 //refresh values to reflect changes
-                adminAccts = accountReader.GetAllAdminAccounts();
-                userAccts = accountReader.GetAllUserAccounts();
-                lstViewUsers_fillValues("", true, false);
-                lblUserCount.Text = "Total Number of Users: " + accountReader.Count.ToString();
+                UserInfo_Refresh();
 
                 //reset labels and disable button
-                lblUserId.Hide();
-                lblUsername.Hide();
-                lbl_IsAdmin.Hide();
-                lblUserPassword.Hide();
-                btnDeleteUser.Enabled = false;
-                btnModifyUser.Enabled = false;
+                UserInfo_Enabled(false);
             }
             else
                 return;
         }
 
-        private void lstViewUsers_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            //highligh selection made in lstViewUsers
-
-            if (lstViewUsers.SelectedIndices.Count != 0)
-            {
-                Trace.WriteLine("Selection Index Changed: " + lstViewUsers.SelectedIndices[0].ToString());
-                int selectedIndex = lstViewUsers.SelectedIndices[0];
-                string selectedItem = lstViewUsers.Items[selectedIndex].Text;
-
-                //enable the labels and buttons if they aren't yet
-                if (!lblUserId.Visible)
-                {
-                    lblUserId.Show();
-                    lblUsername.Show();
-                    lbl_IsAdmin.Show();
-                    lblUserPassword.Show();
-                    btnDeleteUser.Enabled = true;
-                }
-                Trace.WriteLine("User list item selected: " + selectedItem);
-
-                //get the corresponding user from the userAccts/adminAccts
-                bool userFound = false;
-                //start with user accounts first
-                foreach (var userAcc in userAccts)
-                {
-                    if (userAcc.Id.ToString() == selectedItem)
-                    {
-                        lblUserId.Text = "User ID: " + userAcc.Id.ToString();
-                        lblUsername.Text = "Username: " + userAcc.Username;
-                        lblUserPassword.Text = "Password: " + userAcc.Password;
-                        lbl_IsAdmin.Text = "Is Admin: " + userAcc.IsAdmin;
-                        //modify button only for users, not admins
-                        btnModifyUser.Enabled = true;
-                        userFound = true;
-                        break;
-                    }
-                }
-                //if user is already found, no need to check for admin
-                if (!userFound)
-                {
-                    foreach (var adminAcc in adminAccts)
-                    {
-                        if (adminAcc.Id.ToString() == selectedItem)
-                        {
-                            lblUserId.Text = "User ID: " + adminAcc.Id.ToString();
-                            lblUsername.Text = "Username: " + adminAcc.Username;
-                            lblUserPassword.Text = "Password: " + adminAcc.Password;
-                            lbl_IsAdmin.Text = "Is Admin: " + adminAcc.IsAdmin;
-                            userFound = true;
-                            break;
-                        }
-                    }
-                }
-            }
-            //highlight selection disappeared from lstViewUsers
-            else
-            {
-                Trace.WriteLine("Selection Index Changed: " + "NULL");
-                //reset labels and disable button
-                lblUserId.Hide();
-                lblUsername.Hide();
-                lbl_IsAdmin.Hide();
-                lblUserPassword.Hide();
-                btnDeleteUser.Enabled = false;
-                btnModifyUser.Enabled = false;
-            }
-        }
-
-        private void rdBtnSearchOption_CheckedChanged(object sender, EventArgs e)
-        {
-            lstViewUsers_fillValues(txtBxSearchUser.Text, rdBtnSearchByUsername.Checked, chkBxSearchUserMatchCase.Checked);
-            //reset labels and disable delete button
-            lblUserId.Hide();
-            lblUsername.Hide();
-            lbl_IsAdmin.Hide();
-            lblUserPassword.Hide();
-            btnDeleteUser.Enabled = false;
-            btnModifyUser.Enabled = false;
-        }
-
-        private void btnChangeUsername_Click(object sender, EventArgs e)
-        {
-            ResetUsername ui_rstUser = new ResetUsername(loggedAdmin, accountReader);
-            ui_rstUser.UsernameChangedEvent += new UsernameChangedHandler(EventTrigger_UsernameChanged);
-            ui_rstUser.ShowDialog();
-        }
-
-        private void btnModifyUser_Click(object sender, EventArgs e)
-        {
-            int userId = int.Parse(lblUserId.Text.Substring(10));
-
-            Admin_ModifyUser ui_modUser = new Admin_ModifyUser(userId, accountReader);
-            ui_modUser.UserModifiedEvent += new UserModifiedHandler(EventTrigger_UserModified);
-            ui_modUser.ShowDialog();
-        }
-
-        private void btnImportComic_Click(object sender, EventArgs e)
-        {
-            //ask user to import a cbr/cbz archive using file dialog
-            OpenFileDialog fileDlg = new OpenFileDialog();
-            fileDlg.InitialDirectory = Directory.GetCurrentDirectory();
-            fileDlg.RestoreDirectory = true;
-            fileDlg.Title = "Select Comic Book Archive";
-            fileDlg.Filter = "CBR/CBZ archive (*.cbr,*.cbz)|*.cbr;*.cbz";
-            fileDlg.CheckFileExists = true;
-            fileDlg.Multiselect = true;
-            fileDlg.ShowDialog();
-
-            string[] archivePaths = fileDlg.FileNames;
-            string comicArchiveDir = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "comicbooks");
-            //create directory, as assurance
-            Directory.CreateDirectory(comicArchiveDir);
-
-            //copy each archive to resources folder
-            //intitialize a comic book record for each archive path
-            List<Business_Logic.ComicBook> comicBookList = new List<Business_Logic.ComicBook>();
-            foreach (var path in archivePaths)
-            {
-                string copiedCbPath = Path.Combine(comicArchiveDir, Path.GetFileName(path));
-                if (!File.Exists(copiedCbPath))
-                    File.Copy(path, copiedCbPath);
-                comicReader.InitializeNewComicBook(copiedCbPath);
-            }
-
-            //update listViewAvailableComics
-            lstViewAvailableComics_Refresh();
-        }
+        
+        #endregion
+        #region Comics Tab
 
         /// <summary>
         /// reread available comics
@@ -557,6 +504,11 @@ namespace ComicArchive.User_Interface
             comicBooks = cbList.ToArray();
         }
 
+        private void SearchComic_CriteriaSearchEvent(object sender, EventArgs e)
+        {
+            lstViewAvailableComics_FillWithSearchCriteria(txtBxSearchComic.Text.Trim());
+        }
+
         private void lstViewAvailableComics_FillWithSearchCriteria(string searchVal)
         {
             //reset list view
@@ -584,7 +536,7 @@ namespace ComicArchive.User_Interface
                     foreach (var cb in comicBooks)
                     {
                         if (cb.ComicTitle.ToLower().Contains(searchVal.ToLower()) ||
-                            cb.ComicSubTitle.ToLower().Contains(searchVal.ToLower())||
+                            cb.ComicSubTitle.ToLower().Contains(searchVal.ToLower()) ||
                             cb.ComicIssue.ToLower().Contains(searchVal.ToLower()))
                         {
                             lstViewAvailableComics.Items.Add(Path.GetFileName(cb.GetArchivePath()));
@@ -601,7 +553,7 @@ namespace ComicArchive.User_Interface
                     foreach (var cb in comicBooks)
                     {
                         //empty authors, don't bother checking, don't add
-                        if (cb.ComicAuthors != null && 
+                        if (cb.ComicAuthors != null &&
                             cb.ComicAuthors.Where(author => author == searchVal).Count() != 0)
                         {
                             lstViewAvailableComics.Items.Add(Path.GetFileName(cb.GetArchivePath()));
@@ -736,7 +688,7 @@ namespace ComicArchive.User_Interface
                 selectedComic = comicReader.GetComicBook(cbFullPath);
 
                 //enable textboxes/labels
-                ComicInfo_Enable(true);
+                ComicInfo_Enabled(true);
 
                 //set values in textboxes/labels
                 ComicInfo_SetValues(selectedComic);
@@ -746,11 +698,11 @@ namespace ComicArchive.User_Interface
             {
                 Trace.WriteLine("Selection Index Changed: " + "NULL");
                 //hide the controls and disable the textboxes
-                ComicInfo_Enable(false);
+                ComicInfo_Enabled(false);
             }
         }
 
-        private void ComicInfo_Enable(bool enabled)
+        private void ComicInfo_Enabled(bool enabled)
         {
             //reset text
             txtBxComicTitle.ResetText();
@@ -805,7 +757,7 @@ namespace ComicArchive.User_Interface
             txtBxPublisher.Text = cb.Publisher;
 
             lblViewCount.Text = "# of Views: " + cb.ViewCount.ToString();
-            lblAvgRating.Text = "Average Rating: " + cb.AvgRating.ToString();
+            lblAvgRating.Text = "Average Rating: " + cb.Rating.ToString();
 
             if (picBxComicCover.Image != null)
                 picBxComicCover.Image.Dispose();
@@ -819,7 +771,7 @@ namespace ComicArchive.User_Interface
 
             if (title.Length == 0)
             {
-                MessageBox.Show("Comic Title cannot be empty.", "Input Error", 
+                MessageBox.Show("Comic Title cannot be empty.", "Input Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
                 return;
             }
@@ -896,7 +848,7 @@ namespace ComicArchive.User_Interface
                     MessageBox.Show("Failed to modify comic book.", "Edit Comic Book",
                     MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1);
                 }
-                
+
             }
         }
 
@@ -928,7 +880,7 @@ namespace ComicArchive.User_Interface
 
                     //refresh values
                     lstViewAvailableComics_Refresh();
-                    ComicInfo_Enable(false);
+                    ComicInfo_Enabled(false);
                 }
                 else
                 {
@@ -940,9 +892,150 @@ namespace ComicArchive.User_Interface
             }
         }
 
-        private void SearchComic_CriteriaSearchEvent(object sender, EventArgs e)
+        private void btnImportComic_Click(object sender, EventArgs e)
         {
-            lstViewAvailableComics_FillWithSearchCriteria(txtBxSearchComic.Text.Trim());
+            //ask user to import a cbr/cbz archive using file dialog
+            OpenFileDialog fileDlg = new OpenFileDialog();
+            fileDlg.InitialDirectory = Directory.GetCurrentDirectory();
+            fileDlg.RestoreDirectory = true;
+            fileDlg.Title = "Select Comic Book Archive";
+            fileDlg.Filter = "CBR/CBZ archive (*.cbr,*.cbz)|*.cbr;*.cbz";
+            fileDlg.CheckFileExists = true;
+            fileDlg.Multiselect = true;
+            fileDlg.ShowDialog();
+
+            string[] archivePaths = fileDlg.FileNames;
+            string comicArchiveDir = Path.Combine(Directory.GetCurrentDirectory(), "Resources", "comicbooks");
+            //create directory, as assurance
+            Directory.CreateDirectory(comicArchiveDir);
+
+            //start of background thread stuff
+            progDialog = new ProgressDialog();
+            backgroundProcessDone = false;
+            bgWorker = new BackgroundWorker
+            {
+                WorkerReportsProgress = true,
+                WorkerSupportsCancellation = true
+            };
+
+            bgWorker.DoWork += delegate (object s, DoWorkEventArgs args)
+            {
+                //copy each archive to resources folder
+                //intitialize a comic book record for each archive path
+                List<Business_Logic.ComicBook> comicBookList = new List<Business_Logic.ComicBook>();
+                int progress = 0;
+                foreach (var path in archivePaths)
+                {
+                    string copiedCbPath = Path.Combine(comicArchiveDir, Path.GetFileName(path));
+                    if (!File.Exists(copiedCbPath))
+                        File.Copy(path, copiedCbPath);
+                    comicReader.InitializeNewComicBook(copiedCbPath);
+                    progress++;
+                    //report progress on file transfer
+                    ReportProgress?.Invoke(this, new ProgressArgs
+                    {
+                        TotalProcessed = progress,
+                        TotalRecords = archivePaths.Count(),
+                        Description = "Importing comic books.",
+                        IsDoneProcessing = false
+                    });
+                }
+                //report that file transfer is done.
+                ReportProgress?.Invoke(this, new ProgressArgs
+                {
+                    TotalProcessed = progress,
+                    TotalRecords = archivePaths.Count(),
+                    Description = "Importing comic books.",
+                    IsDoneProcessing = true
+                });
+            };
+
+            ReportProgress += FileTransfer_ReportProgress;
+
+            bgWorker.RunWorkerAsync();
+            progDialog.ShowDialog();
+            //end of background thread stuff
+
+            while (!backgroundProcessDone) ;
+
+            //update listViewAvailableComics
+            lstViewAvailableComics_Refresh();
         }
+
+        #endregion
+        #region Admin_Form
+        private void btnSignOut_Click(object sender, EventArgs e)
+        {
+            ui_login.Show();
+            this.Close();
+        }
+
+        private void Admin_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (!ui_login.Visible)
+                ui_login.Close();
+        }
+
+        private void dateTimer_Tick(object sender, EventArgs e)
+        {
+            lblDateToday.Text = DateTime.Now.ToShortDateString();
+            lblRunningTime.Text = DateTime.Now.ToLongTimeString();
+        }
+
+        private void tbCtrlSearch_HideTabPages()
+        {
+            tbCtrlSearch.TabPages.Remove(tbPgSearchUser);
+            tbCtrlSearch.TabPages.Remove(tbPgSearchComic);
+        }
+
+        private void tbCtrlSearch_ShowTabPageUser()
+        {
+            if (!tbCtrlSearch.TabPages.Contains(tbPgSearchUser))
+            {
+                tbCtrlSearch.TabPages.Add(tbPgSearchUser);
+                rdBtnSearchById.Checked = true;
+                chkBxSearchUserMatchCase.Checked = false;
+            }
+
+            if (tbCtrlSearch.TabPages.Contains(tbPgSearchComic))
+                tbCtrlSearch.TabPages.Remove(tbPgSearchComic);
+        }
+
+        private void tbCtrlSearch_ShowTabPageComic()
+        {
+            if (!tbCtrlSearch.TabPages.Contains(tbPgSearchComic))
+            {
+                tbCtrlSearch.TabPages.Add(tbPgSearchComic);
+                rdBtnComicHeaders.Checked = true;
+                chkBxSearchComicMatchCase.Checked = false;
+                rdBtnSortDateAdded.Checked = true;
+            }
+
+            if (tbCtrlSearch.TabPages.Contains(tbPgSearchUser))
+                tbCtrlSearch.TabPages.Remove(tbPgSearchUser);
+        }
+
+        private void tbCtrlAdmin_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tbCtrlAdmin.SelectedTab == tbPgUsers)
+                tbCtrlSearch_ShowTabPageUser();
+            else
+                tbCtrlSearch_ShowTabPageComic();
+        }
+
+        private void btnChangePassword_Click(object sender, EventArgs e)
+        {
+            ResetPasswordUI ui_rstPass = new ResetPasswordUI(loggedAdmin.Password);
+            ui_rstPass.PasswordChangedEvent += new PasswordChangedHandler(EventTrigger_ChangePassword);
+            ui_rstPass.ShowDialog();
+        }
+
+        private void btnChangeUsername_Click(object sender, EventArgs e)
+        {
+            ResetUsernameUI ui_rstUser = new ResetUsernameUI(loggedAdmin, accountReader);
+            ui_rstUser.UsernameChangedEvent += new UsernameChangedHandler(EventTrigger_UsernameChanged);
+            ui_rstUser.ShowDialog();
+        }
+        #endregion
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace ComicArchive.User_Interface
 {
-    partial class Admin_AddUser
+    partial class AdminUI_AddUser
     {
         /// <summary>
         /// Required designer variable.

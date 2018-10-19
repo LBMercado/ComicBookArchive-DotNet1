@@ -8,20 +8,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ComicArchive.Data_Access;
-using static ComicArchive.User_Interface.Admin;
+using static ComicArchive.User_Interface.AdminUI;
 
 namespace ComicArchive.User_Interface
 {
-    public partial class Admin_AddUser : Form
+    public partial class AdminUI_AddUser : Form
     {
         //data members
-        private Admin ui_admin;
+        private AdminUI ui_admin;
         private AccountAccess acctReader;
         public event AddUserHandler AddUserEvent;
         private Business_Logic.Admin newAdmin;
         private Business_Logic.User newUser;
 
-        public Admin_AddUser(Admin ui_admin, AccountAccess acctReader)
+        public AdminUI_AddUser(AdminUI ui_admin, AccountAccess acctReader)
         {
             InitializeComponent();
 

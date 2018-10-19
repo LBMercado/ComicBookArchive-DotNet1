@@ -1,6 +1,6 @@
 ﻿namespace ComicArchive.User_Interface
 {
-    partial class Admin
+    partial class AdminUI
     {
         /// <summary>
         /// Required designer variable.
@@ -777,7 +777,7 @@
             this.txtBxSearchUser.Name = "txtBxSearchUser";
             this.txtBxSearchUser.Size = new System.Drawing.Size(218, 20);
             this.txtBxSearchUser.TabIndex = 1;
-            this.txtBxSearchUser.TextChanged += new System.EventHandler(this.txtBxSearchUser_TextChanged);
+            this.txtBxSearchUser.TextChanged += new System.EventHandler(this.SearchUser_CriteriaSearchEvent);
             // 
             // grpBxSearchUserOptions
             // 
@@ -800,7 +800,7 @@
             this.chkBxSearchUserMatchCase.TabIndex = 2;
             this.chkBxSearchUserMatchCase.Text = "Match Case";
             this.chkBxSearchUserMatchCase.UseVisualStyleBackColor = true;
-            this.chkBxSearchUserMatchCase.CheckedChanged += new System.EventHandler(this.txtBxSearchUser_TextChanged);
+            this.chkBxSearchUserMatchCase.CheckedChanged += new System.EventHandler(this.SearchUser_CriteriaSearchEvent);
             // 
             // rdBtnSearchByUsername
             // 
@@ -812,7 +812,7 @@
             this.rdBtnSearchByUsername.TabStop = true;
             this.rdBtnSearchByUsername.Text = "Filter using Username";
             this.rdBtnSearchByUsername.UseVisualStyleBackColor = true;
-            this.rdBtnSearchByUsername.CheckedChanged += new System.EventHandler(this.rdBtnSearchOption_CheckedChanged);
+            this.rdBtnSearchByUsername.CheckedChanged += new System.EventHandler(this.SearchUser_CriteriaSearchEvent);
             // 
             // rdBtnSearchById
             // 
@@ -824,7 +824,7 @@
             this.rdBtnSearchById.TabStop = true;
             this.rdBtnSearchById.Text = "Filter using ID";
             this.rdBtnSearchById.UseVisualStyleBackColor = true;
-            this.rdBtnSearchById.CheckedChanged += new System.EventHandler(this.rdBtnSearchOption_CheckedChanged);
+            this.rdBtnSearchById.CheckedChanged += new System.EventHandler(this.SearchUser_CriteriaSearchEvent);
             // 
             // tbPgSearchComic
             // 
@@ -871,6 +871,7 @@
             this.rdBtnSortDateReleased.TabStop = true;
             this.rdBtnSortDateReleased.Text = "Sort By Date Released";
             this.rdBtnSortDateReleased.UseVisualStyleBackColor = true;
+            this.rdBtnSortDateReleased.CheckedChanged += new System.EventHandler(this.SearchComic_CriteriaSearchEvent);
             // 
             // rdBtnSortDateAdded
             // 
@@ -970,7 +971,7 @@
             this.dateTimer.Enabled = true;
             this.dateTimer.Tick += new System.EventHandler(this.dateTimer_Tick);
             // 
-            // Admin
+            // AdminUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -983,7 +984,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(984, 691);
-            this.Name = "Admin";
+            this.Name = "AdminUI";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Admin";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Admin_FormClosed);
