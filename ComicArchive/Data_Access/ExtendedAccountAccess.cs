@@ -10,14 +10,19 @@ using System.IO;
 
 namespace ComicArchive.Data_Access
 {
-    public class ComicLibraryAccess: AccountAccess
-    {
-        //data members
-        private User[] userList;
+    public class ExtendedAccountAccess: AccountAccess
+    {   
 
-        public ComicLibraryAccess(string acctFilePath) : base(acctFilePath)
+        /// <summary>
+        /// Provides a means of setting and accessing an XML accounts file.
+        /// Specialized for reading/writing comic book libraries for a User
+        /// </summary>
+        /// <param name="acctFilePath">
+        /// Path of the XML accounts file.
+        /// </param>
+        public ExtendedAccountAccess(string acctFilePath) : base(acctFilePath)
         {
-            userList = GetAllUserAccounts();
+            userList = ReadAllUserAccounts();
         }
 
         /// <summary>
@@ -26,7 +31,7 @@ namespace ComicArchive.Data_Access
         /// <returns>
         /// array of User objects
         /// </returns>
-        public new User[] GetAllUserAccounts()
+        public new User[] ReadAllUserAccounts()
         {
             if (PathIsValid())
             {
@@ -188,7 +193,7 @@ namespace ComicArchive.Data_Access
                         account.Add(libraryHead_element);
 
                         //reload records to reflect changes made
-                        userList = GetAllUserAccounts();
+                        userList = ReadAllUserAccounts();
 
                         xDocument.Save(filePath);
 
@@ -229,14 +234,12 @@ namespace ComicArchive.Data_Access
                     //the 1000 indicates an admin, any other will be a user
                     if (id_element.Value.Substring(0, 4) != "1000")
                     {
-                        //delete the library head associated with this user
-                        libraryHead_element = new XElement("MyComicLibrary");
-
+                        //remove the library head for this user
                         if (libraryHead_element != null)
                             libraryHead_element.Remove();
+                        
                         //reload records to reflect changes made
-
-                        userList = GetAllUserAccounts();
+                        userList = ReadAllUserAccounts();
 
                         xDocument.Save(filePath);
 

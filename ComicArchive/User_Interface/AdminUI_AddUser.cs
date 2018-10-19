@@ -60,7 +60,6 @@ namespace ComicArchive.User_Interface
             string password = txtBxPassword.Text.Trim();
             string passwordConf = txtBxPasswordConf.Text.Trim();
 
-            acctReader.SetAccount(username, password);
             if (username == "" ||
                 password == "" ||
                 username.Length < 6 ||
@@ -68,7 +67,7 @@ namespace ComicArchive.User_Interface
             {
                 lbl_Info.Text = "Username and password must be at least 6 characters long.";
             }
-            else if (acctReader.AccountExists())
+            else if (acctReader.AccountExists(username))
             {
                 lbl_Info.Text = "Username is already used. Please enter another.";
             }
@@ -80,20 +79,20 @@ namespace ComicArchive.User_Interface
             {
                 if (chkBxIsAdmin.Checked)
                 {
-                    acctReader.WriteAdminAccount();
+                    acctReader.WriteAdminAccount(username, password);
                     lbl_Info.ForeColor = Color.Green;
                     lbl_Info.Text = "New admin successfully added!";
                     MessageBox.Show("New admin successfully added!", "Add User", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
-                    this.newAdmin = acctReader.GetAdminAccount();
+                    this.newAdmin = acctReader.GetAdminAccount(username, password);
                     this.Close();
                 }
                 else
                 {
-                    acctReader.WriteUserAccount();
+                    acctReader.WriteUserAccount(username, password);
                     lbl_Info.ForeColor = Color.Green;
                     lbl_Info.Text = "New user successfully added!";
                     MessageBox.Show("New user successfully added!", "Add User", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
-                    this.newUser = acctReader.GetUserAccount();
+                    this.newUser = acctReader.GetUserAccount(username, password);
                     this.Close();
                 }
                 
@@ -107,7 +106,6 @@ namespace ComicArchive.User_Interface
             string passwordConf = txtBxPasswordConf.Text.Trim();
             lbl_Info.ForeColor = Color.DarkRed;
 
-            acctReader.SetAccount(username, password);
             if (username == "" ||
                 password == "" ||
                 username.Length < 6 ||
@@ -115,7 +113,7 @@ namespace ComicArchive.User_Interface
             {
                 lbl_Info.Text = "Username and password must be at least 6 characters long.";
             }
-            else if (acctReader.AccountExists())
+            else if (acctReader.AccountExists(username))
             {
                 lbl_Info.Text = "Username is already used. Please enter another.";
             }

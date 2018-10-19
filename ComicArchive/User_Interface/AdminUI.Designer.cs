@@ -49,6 +49,7 @@
             this.lstViewUserComics = new System.Windows.Forms.ListView();
             this.colSavedComicName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tbPgComics = new System.Windows.Forms.TabPage();
+            this.lblNumPages = new System.Windows.Forms.Label();
             this.lblViewCount = new System.Windows.Forms.Label();
             this.lblAvgRating = new System.Windows.Forms.Label();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
@@ -341,6 +342,7 @@
             // tbPgComics
             // 
             this.tbPgComics.BackColor = System.Drawing.Color.DarkGray;
+            this.tbPgComics.Controls.Add(this.lblNumPages);
             this.tbPgComics.Controls.Add(this.lblViewCount);
             this.tbPgComics.Controls.Add(this.lblAvgRating);
             this.tbPgComics.Controls.Add(this.flowLayoutPanel1);
@@ -354,6 +356,17 @@
             this.tbPgComics.Size = new System.Drawing.Size(805, 754);
             this.tbPgComics.TabIndex = 1;
             this.tbPgComics.Text = "Comics";
+            // 
+            // lblNumPages
+            // 
+            this.lblNumPages.AutoSize = true;
+            this.lblNumPages.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.lblNumPages.Location = new System.Drawing.Point(332, 121);
+            this.lblNumPages.Name = "lblNumPages";
+            this.lblNumPages.Size = new System.Drawing.Size(65, 13);
+            this.lblNumPages.TabIndex = 33;
+            this.lblNumPages.Text = "# of Pages: ";
+            this.lblNumPages.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // lblViewCount
             // 
@@ -525,7 +538,7 @@
             this.lblGenre.Name = "lblGenre";
             this.lblGenre.Size = new System.Drawing.Size(120, 47);
             this.lblGenre.TabIndex = 26;
-            this.lblGenre.Text = "Genre: ";
+            this.lblGenre.Text = "Genre/s: \r\n(Separate with commas)";
             // 
             // lblComicTitle
             // 
@@ -1096,5 +1109,6 @@
         private System.Windows.Forms.Label lblViewCount;
         private System.Windows.Forms.Label lblAvgRating;
         private System.Windows.Forms.RadioButton rdBtnGenre;
+        private System.Windows.Forms.Label lblNumPages;
     }
 }

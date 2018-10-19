@@ -20,7 +20,6 @@ namespace ComicArchive.Data_Access
     {
         //data members
         private ComicBook comicBook;
-        private string archivePath; //path of the comic archive (.cbz/.cbr)
         private string tempPath; //path to store temporary extracted archives
         private int currentPage; //current page in the comic book
         //NOTE: current page IS NOT array index, subtract 1 to make it array-compatible
@@ -28,38 +27,28 @@ namespace ComicArchive.Data_Access
         /// <summary>
         /// initialize a comic reader, opens the file on demand
         /// </summary>
-        /// <param name="archivePath">
-        /// the directory/path where the comic is found
-        /// </param>
         /// <param name="tempPath">
         /// temporary storage for extracted files from the comic
         /// </param>
-        public ComicReader(string archivePath = "", string tempPath = "temp")
+        public ComicReader(string tempPath = "temp")
         {
             comicBook = null;
-            this.archivePath = archivePath;
             this.tempPath = tempPath;
         }
 
         /// <summary>
-        /// Open the comic based on comicPath, this closes the current one
+        /// Open the comic based on archivePath, this closes the current one
         /// </summary>
-        public void OpenComic()
+        public void OpenComicBook(string archivePath)
         {
-            //throw an error if the archive path is invalid
-            if (!ArchivePathIsValid())
-            {
-                InvalidComicArchivePathException exc = new InvalidComicArchivePathException("Set archivePath is invalid.");
-                throw exc;
-            }
+            //get the comic book from the archivePath using ComicAccess
+            ComicAccess comAcc = new ComicAccess();
+            comicBook = comAcc.GetComicBook(archivePath);
             
             //set extract folder in temporary folder pertaining to comic, and make it the new tempPath
             //this will be the cache for the comic book
             tempPath = Path.Combine(tempPath,
                 Path.GetFileNameWithoutExtension(archivePath));
-
-            //open a new comic book
-            comicBook = new ComicBook();
 
             //check if comic book has already been cached to temp folder
             if (Directory.Exists(tempPath) && Directory.GetFiles(tempPath).Length != 0)
@@ -179,17 +168,6 @@ namespace ComicArchive.Data_Access
         }
 
         /// <summary>
-        /// set the archivePath of the comic reader
-        /// </summary>
-        /// <param name="archivePath">
-        /// filename and the path to the cbr/cbz archive
-        /// </param>
-        public void SetArchivePath(string archivePath)
-        {
-            this.archivePath = archivePath;
-        }
-
-        /// <summary>
         /// return number of pages of the comic
         /// </summary>
         /// <returns></returns>
@@ -217,6 +195,16 @@ namespace ComicArchive.Data_Access
         public int GetCurrentPageNumber()
         {
             return currentPage;
+        }
+
+        /// <summary>
+        /// sets currentpage directly
+        /// </summary>
+        public void GoToPage(int page)
+        {
+            if (page <= comicBook.PageCount &&
+                page >= 1)
+                currentPage = page;
         }
 
         /// <summary>
@@ -278,15 +266,6 @@ namespace ComicArchive.Data_Access
         }
 
         /// <summary>
-        /// get title of comic book
-        /// </summary>
-        /// <returns></returns>
-        public string GetTitle()
-        {
-            return comicBook.ComicTitle + ": " + comicBook.ComicSubTitle;
-        }
-
-        /// <summary>
         /// returns the comic book that has been opened.
         /// </summary>
         /// <returns></returns>
@@ -324,25 +303,6 @@ namespace ComicArchive.Data_Access
                 Directory.Delete(cacheDir, true);
             }
         }
-
-        /// <summary>
-        /// checks whether archivePath is pointing to a cbr/cbz file that exists
-        /// </summary>
-        /// <returns>
-        /// true if archivePath is valid, false otherwise
-        /// </returns>
-        private bool ArchivePathIsValid()
-        {
-            if (File.Exists(archivePath))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
 
         #region Events_ComicReader
         //progress reporting methods

@@ -63,13 +63,12 @@ namespace ComicArchive.User_Interface
             //username entering phase
             else
             {
-                acctReader.SetAccount(input, adminUser.Password);
                 if (input.Length < 6)
                 {
                     lbl_Info.Text = "Username must be at least 6 characters long.";
                     lbl_Info.ForeColor = Color.DarkRed;
                 }
-                else if (acctReader.AccountExists())
+                else if (acctReader.AccountExists(input))
                 {
                     lbl_Info.Text = "Username is already used. Please enter another.";
                     lbl_Info.ForeColor = Color.DarkRed;
@@ -86,9 +85,9 @@ namespace ComicArchive.User_Interface
                     if (response == DialogResult.Yes)
                     {
                         //change username
-                        if (acctReader.UpdateAccount(adminUser.Id))
+                        if (acctReader.UpdateAccount(adminUser.Id, input, adminUser.Password))
                         {
-                            adminUser = acctReader.GetAdminAccount();
+                            adminUser = acctReader.GetAdminAccount(input, adminUser.Password);
                             MessageBox.Show("Username changed!", "Reset Username", MessageBoxButtons.OK,
                                 MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
 
@@ -138,13 +137,12 @@ namespace ComicArchive.User_Interface
             //username entering phase
             else
             {
-                acctReader.SetAccount(input, adminUser.Password);
                 if (input.Length < 6)
                 {
                     lbl_Info.Text = "Username must be at least 6 characters long.";
                     lbl_Info.ForeColor = Color.DarkRed;
                 }
-                else if (acctReader.AccountExists())
+                else if (acctReader.AccountExists(input))
                 {
                     lbl_Info.Text = "Username is already used. Please enter another.";
                     lbl_Info.ForeColor = Color.DarkRed;

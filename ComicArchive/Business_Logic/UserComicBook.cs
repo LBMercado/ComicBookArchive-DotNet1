@@ -36,7 +36,7 @@ namespace ComicArchive.Business_Logic
             returnCb.ComicAuthors = cb.ComicAuthors;
             returnCb.ComicDateAdded = cb.ComicDateAdded;
             returnCb.ComicDateReleased = cb.ComicDateReleased;
-            returnCb.ComicGenre = cb.ComicGenre;
+            returnCb.ComicGenres = cb.ComicGenres;
             returnCb.ComicIssue = cb.ComicIssue;
             returnCb.ComicSubTitle = cb.ComicSubTitle;
             returnCb.ComicSynopsis = cb.ComicSynopsis;

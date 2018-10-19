@@ -58,11 +58,14 @@ namespace ComicArchive.Data_Access
         /// </summary>
         public new void CreateDataDirectory()
         {
-            XDocument xdocument;
-            Directory.CreateDirectory(root);
+            if (!PathIsValid())
+            {
+                XDocument xdocument;
+                Directory.CreateDirectory(root);
 
-            xdocument = new XDocument(new XElement("ComicBooks"));
-            xdocument.Save(filePath);
+                xdocument = new XDocument(new XElement("ComicBooks"));
+                xdocument.Save(filePath);
+            }
         }
 
         /// <summary>
@@ -142,6 +145,43 @@ namespace ComicArchive.Data_Access
         }
 
         /// <summary>
+        /// gets the number of pages of the cbz/cbr archive
+        /// </summary>
+        private int ReadPageCount(string archivePath)
+        {
+            if (File.Exists(archivePath))
+            {
+                //direct the program to the dependency: 7z.dll (7z64.dll for 64-bit ver.)
+                SevenZipBase.SetLibraryPath(Path.Combine(Environment.CurrentDirectory, "7z.dll"));
+
+                using (var extractor = new SevenZipExtractor(archivePath))
+                {
+                    //get the sorted archive file list to get the first image
+                    //verify that the cover page is an image
+                    var fileNames = extractor.ArchiveFileData
+                        .Where(
+                        file => ImageChecker.IsImageExtension(
+                            Path.GetExtension(file.FileName)
+                            )
+                            );
+                    fileNames = fileNames.OrderBy(file => file.FileName);
+
+                    //this is the page count
+                    return fileNames.Count();
+                }
+            }
+            else
+            {
+                Trace.WriteLine("Set Path = " + "<" + filePath + ">" + " is invalid, cannot proceed with page counting process.");
+                FileNotFoundException exc = new FileNotFoundException
+                    (
+                    "Set Path = " + "<" + filePath + ">" + " cannot proceed with comic book records access."
+                    );
+                throw exc;
+            }
+        }
+
+        /// <summary>
         /// reads all the comic book records in the comic book records XML file
         /// </summary>
         private void ReadComicBookRecords()
@@ -174,13 +214,22 @@ namespace ComicArchive.Data_Access
                     XElement dateAddedRead = bookRecord.Element("Date_Added");
                     XElement dateReleasedRead = bookRecord.Element("Date_Released");
                     XElement synopsisRead = bookRecord.Element("Synopsis");
-                    XElement genreRead = bookRecord.Element("Genre");
                     XElement publisherRead = bookRecord.Element("Publisher");
                     XElement viewCountRead = bookRecord.Element("View_Count");
                     XElement avgRatingRead = bookRecord.Element("Avg_Rating");
+                    XElement pgCountRead = bookRecord.Element("PageCount");
 
+                    XElement genresRead = bookRecord.Element("Genres");
                     XElement AuthorsRead = bookRecord.Element("Authors");
                     List<string> AuthorRead = new List<string>();
+                    List<string> genreRead = new List<string>();
+                    //have to go down the genres, there could be multiple genres
+                    //do so if there are any
+                    if (genresRead.Descendants().Count() != 0)
+                        foreach (XElement genre in genresRead.Descendants())
+                        {
+                            genreRead.Add(genre.Value);
+                        }
                     //have to go down the authors, there could be multiple authors
                     //do so if there are any
                     if (AuthorsRead.Descendants().Count() != 0)
@@ -198,10 +247,15 @@ namespace ComicArchive.Data_Access
                     comicBookRead.ComicDateAdded = DateTime.Parse(dateAddedRead.Value);
                     comicBookRead.ComicDateReleased = DateTime.Parse(dateReleasedRead.Value);
                     comicBookRead.ComicSynopsis = synopsisRead.Value;
-                    comicBookRead.ComicGenre = genreRead.Value;
                     comicBookRead.Publisher = publisherRead.Value;
                     comicBookRead.ViewCount = int.Parse(viewCountRead.Value);
                     comicBookRead.RateComicBook(float.Parse(avgRatingRead.Value));
+                    comicBookRead.Override_SetPageCount(int.Parse(pgCountRead.Value));
+
+                    if (genreRead.Count() != 0)
+                        comicBookRead.ComicGenres = genreRead.ToArray();
+                    else
+                        comicBookRead.ComicGenres = null;
 
                     if (AuthorRead.Count() != 0)
                         comicBookRead.ComicAuthors = AuthorRead.ToArray();
@@ -243,9 +297,18 @@ namespace ComicArchive.Data_Access
                 //load the comic book record XML file
                 XDocument xDocument = XDocument.Load(filePath);
 
+                //Genres has child nodes
+                XElement newGenres = new XElement("Genres");
+                //Check if comic book has set list, add to Genres if true
+                if (newComicBook.ComicGenres != null)
+                    foreach (var genre in newComicBook.ComicGenres)
+                    {
+                        newGenres.Add(new XElement("Genre", genre));
+                    }
+
                 //Authors has child nodes
                 XElement newAuthors = new XElement("Authors");
-                //need to set the Authors element
+                //Check if comic book has set list, add to Authors if true
                 if (newComicBook.ComicAuthors != null)
                     foreach (var author in newComicBook.ComicAuthors)
                     {
@@ -258,10 +321,11 @@ namespace ComicArchive.Data_Access
                         new XElement("Title", newComicBook.ComicTitle),
                         new XElement("Subtitle", newComicBook.ComicSubTitle),
                         new XElement("Issue", newComicBook.ComicIssue),
+                        new XElement("PageCount", newComicBook.PageCount),
                         new XElement("Date_Added", newComicBook.ComicDateAdded.ToShortDateString()),
                         new XElement("Date_Released", newComicBook.ComicDateReleased.ToShortDateString()),
                         new XElement("Synopsis", newComicBook.ComicSynopsis),
-                        new XElement("Genre", newComicBook.ComicGenre),
+                        newGenres,
                         new XElement("Publisher", newComicBook.Publisher),
                         new XElement("View_Count", newComicBook.ViewCount.ToString()),
                         new XElement("Avg_Rating", newComicBook.Rating.ToString()),
@@ -316,22 +380,31 @@ namespace ComicArchive.Data_Access
                     XElement dateAddedRead = bookRecord.Element("Date_Added");
                     XElement dateReleasedRead = bookRecord.Element("Date_Released");
                     XElement synopsisRead = bookRecord.Element("Synopsis");
-                    XElement genreRead = bookRecord.Element("Genre");
                     XElement publisherRead = bookRecord.Element("Publisher");
                     XElement viewCountRead = bookRecord.Element("View_Count");
                     XElement avgRatingRead = bookRecord.Element("Avg_Rating");
+                    XElement pgCountRead = bookRecord.Element("PageCount");
 
+                    XElement genresRead = bookRecord.Element("Genres");
                     XElement AuthorsRead = bookRecord.Element("Authors");
                     List<string> AuthorRead = new List<string>();
+                    List<string> genreRead = new List<string>();
+                    //have to go down the genres, there could be multiple genres
+                    //do so if there are any
+                    if (genresRead.Descendants().Count() != 0)
+                        foreach (XElement genre in genresRead.Descendants())
+                        {
+                            genreRead.Add(genre.Value);
+                        }
                     //have to go down the authors, there could be multiple authors
-                    //do so if it is not empty
+                    //do so if there are any
                     if (AuthorsRead.Descendants().Count() != 0)
                         foreach (XElement author in AuthorsRead.Descendants())
                         {
                             AuthorRead.Add(author.Value);
                         }
 
-                    //check if matching metadata
+                    //check if matching archive path
                     if (archivePathRead.Value == updatedComicBook.GetArchivePath())
                     {
                         //update contents
@@ -341,10 +414,20 @@ namespace ComicArchive.Data_Access
                         dateAddedRead.Value = updatedComicBook.ComicDateAdded.ToShortDateString();
                         dateReleasedRead.Value = updatedComicBook.ComicDateReleased.ToShortDateString();
                         synopsisRead.Value = updatedComicBook.ComicSynopsis;
-                        genreRead.Value = updatedComicBook.ComicGenre;
                         publisherRead.Value = updatedComicBook.Publisher;
                         viewCountRead.Value = updatedComicBook.ViewCount.ToString();
                         avgRatingRead.Value = updatedComicBook.Rating.ToString();
+                        pgCountRead.Value = updatedComicBook.PageCount.ToString();
+
+                        //remove genres, if not empty
+                        if (genresRead.Descendants().Count() != 0)
+                            genresRead.Descendants().Remove();
+                        //re-add genres, if any
+                        if (updatedComicBook.ComicGenres != null)
+                            foreach (string newGenre in updatedComicBook.ComicGenres)
+                            {
+                                genresRead.Add(new XElement("Genre", newGenre));
+                            }
 
                         //remove authors, if not empty
                         if (AuthorsRead.Descendants().Count() != 0)
@@ -384,7 +467,7 @@ namespace ComicArchive.Data_Access
         /// removes the comic book based on the archivePath in the comic book records XML file
         /// </summary>
         /// <param name="archivePath">
-        /// path to the comic archive
+        /// path to the cbr/cbz comic archive
         /// </param>
         /// <returns>
         /// true if successful, false otherwise
@@ -398,7 +481,7 @@ namespace ComicArchive.Data_Access
 
                 foreach (XElement bookRecord in xDocument.Descendants("ComicBook"))
                 {
-                    //get metadata information
+                    //get archivePath information
                     //this is the path w/filename to the .cbz/.cbr, NOT THE CACHE
                     XElement archivePathRead = bookRecord.Element("ArchivePath");
 
@@ -431,7 +514,7 @@ namespace ComicArchive.Data_Access
         }
 
         /// <summary>
-        /// returns a list of ComicBook objects, if there are any
+        /// returns a List of ComicBooks based on the comic book records XML file
         /// </summary>
         /// <returns>
         /// a list of ComicBook objects
@@ -444,7 +527,9 @@ namespace ComicArchive.Data_Access
         /// <summary>
         /// get specific comic book based on archivePath 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// returns ComicBook object if it exists, null otherwise
+        /// </returns>
         /// <exception cref="FileNotFoundException"></exception>
         public ComicBook GetComicBook(string archivePath)
         {
@@ -490,17 +575,8 @@ namespace ComicArchive.Data_Access
                 //set default init values for newComicBook
                 newComicBook.SetArchivePath(archivePath);
                 newComicBook.ComicTitle = Path.GetFileNameWithoutExtension(archivePath);
-                newComicBook.ComicSubTitle = "";
-                newComicBook.ComicIssue = "";
-                newComicBook.ComicDateAdded = DateTime.Now;
-                newComicBook.ComicDateReleased = DateTime.Now;
                 newComicBook.ComicSynopsis = "";
-                newComicBook.ComicGenre = "";
-                newComicBook.ComicAuthors = null;
-                newComicBook.Publisher = "";
-                newComicBook.ViewCount = 0;
-                newComicBook.RateComicBook(0.0f);
-
+                newComicBook.Override_SetPageCount(ReadPageCount(archivePath));
                 WriteComicBookRecord(newComicBook);
             }
             else
@@ -537,23 +613,7 @@ namespace ComicArchive.Data_Access
 
             if (PathIsValid())
             {
-                //load the comic book record xml file
-                XDocument xDocument = XDocument.Load(filePath);
-
-                foreach (XElement bookRecord in xDocument.Descendants("ComicBook"))
-                {
-                    //get metadata information
-                    //this is the path w/filename to the .cbz/.cbr, NOT THE CACHE
-                    XElement archivePathRead = bookRecord.Element("ArchivePath");
-
-                    //check if matching metadata
-                    if (archivePathRead.Value == archivePath)
-                    {
-                        return true;
-                    }
-
-                }
-                return false;
+                return comicBookList.Any(cb => cb.GetArchivePath() == archivePath);
             }
             else
             {

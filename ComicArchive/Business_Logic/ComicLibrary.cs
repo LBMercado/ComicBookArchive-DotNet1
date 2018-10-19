@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace ComicArchive.Business_Logic
 {
@@ -23,7 +24,7 @@ namespace ComicArchive.Business_Logic
         public bool ComicBookExists(string archivePath)
         {
             return comicBook.Any(
-                cb => cb.GetArchivePath() == archivePath
+                cb => Path.GetFullPath(cb.GetArchivePath()) == Path.GetFullPath(archivePath)
                 );
         }
 
@@ -38,11 +39,12 @@ namespace ComicArchive.Business_Logic
         /// </returns>
         public UserComicBook GetComicBook(string archivePath)
         {
+            archivePath = Path.GetFullPath(archivePath);
             if (ComicBookExists(archivePath))
             {
                 var returnCb = comicBook.Where(cb => cb.GetArchivePath() == archivePath).Single();
                 int indexOfReturnCb = comicBook.IndexOf(returnCb);
-
+                comicBook[indexOfReturnCb].ViewCount++;
                 comicBook[indexOfReturnCb].LastViewed = DateTime.Now;
 
                 return returnCb;
@@ -88,6 +90,7 @@ namespace ComicArchive.Business_Logic
         /// </param>
         public bool RemoveComicBook(string archivePath)
         {
+            archivePath = Path.GetFullPath(archivePath);
             if (ComicBookExists(archivePath))
             {
                 var cbToRemove = comicBook.Where(cb => cb.GetArchivePath() == archivePath).Single();
@@ -112,6 +115,7 @@ namespace ComicArchive.Business_Logic
         /// </returns>
         public bool RateComicBook(string archivePath, int rating)
         {
+            archivePath = Path.GetFullPath(archivePath);
             if (ComicBookExists(archivePath))
             {
                 var cbToRate = comicBook.Where(cb => cb.GetArchivePath() == archivePath).Single();

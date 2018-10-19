@@ -9,19 +9,21 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
+using ComicArchive.Data_Access;
+using ComicArchive.User_Interface;
 
 namespace ComicArchive
 {
     public partial class Login : Form
     {
         //data members
-        Data_Access.AccountAccess acctAcc;
+        AccountAccess acctAcc;
         private const string accountFileName = "accounts.xml";
 
         public Login()
         {
             InitializeComponent();
-            acctAcc = new Data_Access.AccountAccess(accountFileName);
+            acctAcc = new AccountAccess(accountFileName);
         }
 
         public static bool ValidateInput(string usern, string passw)
@@ -91,8 +93,6 @@ namespace ComicArchive
             string passWord = txtBxPass.Text.Trim();
             string confPW = txtBxConfPw.Text.Trim();
 
-            acctAcc.SetAccount(userName, passWord);
-
             //Check first if input is valid
             if (!ValidateInput(userName, passWord))
             {
@@ -103,21 +103,16 @@ namespace ComicArchive
             if (btnSignIn.Text == "Sign In")
             {
                 //Verify login details
-                if (acctAcc.IsValidAccount())
+                if (acctAcc.IsValidAccount(userName, passWord))
                 {
                     //distinguish between user and admin account,
                     //start with user account first
-                    var account = acctAcc.GetUserAccount();
-                    if (account == null)
+
+                    if (acctAcc.IsAdminAccount(userName, passWord))
                     {
                         //get admin account
-                        var adminAccount = acctAcc.GetAdminAccount();
+                        var adminAccount = acctAcc.GetAdminAccount(userName, passWord);
 
-                        if (adminAccount == null)
-                        {
-                            Exception exc = new Exception("Unknown error encountered. Unable to get account of User/Admin.");
-                            throw exc;
-                        }
                         MessageBox.Show("Admin verified, welcome " + adminAccount.Username + '!', "Login", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         //admin window here
@@ -129,10 +124,13 @@ namespace ComicArchive
                     }
                     else
                     {
+                        //get user account
+                        var userAccount = acctAcc.GetUserAccount(userName, passWord);
+
                         MessageBox.Show("Login success!", "Login", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         //Instantiate the MainMenu
-                        MainMenu ui_main = new MainMenu(this);
+                        MainWindowUI ui_main = new MainWindowUI(this, userAccount);
                         txtBxUser.ResetText();
                         txtBxPass.ResetText();
                         this.Hide();
@@ -151,7 +149,7 @@ namespace ComicArchive
             else
             {
                 //Verify login details
-                if (acctAcc.AccountExists())
+                if (acctAcc.AccountExists(userName))
                 {
                     MessageBox.Show("Username is already used. Please enter a new one.", "Sign Up", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     txtBxUser.Focus();
@@ -169,7 +167,7 @@ namespace ComicArchive
                 //If no match, create account and inform user
                 else
                 {
-                    acctAcc.WriteUserAccount();
+                    acctAcc.WriteUserAccount(userName, passWord);
                     MessageBox.Show("Account creation success!", "Sign Up", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     txtBxPass.ResetText();
                     txtBxPass.Focus();

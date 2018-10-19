@@ -49,11 +49,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application_Interface\AdminInterface.cs" />
+    <Compile Include="Application_Interface\ComicReadingInterface.cs" />
+    <Compile Include="Application_Interface\ComicSearchingInterface.cs" />
+    <Compile Include="Application_Interface\ComicSortingInterface.cs" />
+    <Compile Include="Application_Interface\LoginInterface.cs" />
     <Compile Include="Business_Logic\Admin.cs" />
     <Compile Include="Business_Logic\Bookmark.cs" />
+    <Compile Include="Business_Logic\ComicArchiveChecker.cs" />
     <Compile Include="Business_Logic\ComicLibrary.cs" />
     <Compile Include="Business_Logic\UserComicBook.cs" />
-    <Compile Include="Data_Access\ComicLibraryAccess.cs" />
+    <Compile Include="Data_Access\ExtendedAccountAccess.cs" />
     <Compile Include="Exceptions\ComicArchivePagePathsNotSetException.cs" />
     <Compile Include="Business_Logic\ComicBook.cs" />
     <Compile Include="Business_Logic\ImageChecker.cs" />
@@ -62,6 +68,9 @@
     <Compile Include="Exceptions\InvalidImageException.cs" />
     <Compile Include="Data_Access\AccountAccess.cs" />
     <Compile Include="Data_Access\ComicAccess.cs" />
+    <Compile Include="Exceptions\InvalidSearchOptionException.cs" />
+    <Compile Include="Exceptions\InvalidSortOptionException.cs" />
+    <Compile Include="Exceptions\NoComicOpenedException.cs" />
     <Compile Include="Exceptions\UserDoesNotExistException.cs" />
     <Compile Include="User_Interface\AdminUI.cs">
       <SubType>Form</SubType>
@@ -80,6 +89,24 @@
     </Compile>
     <Compile Include="User_Interface\AdminUI_ModifyUser.Designer.cs">
       <DependentUpon>AdminUI_ModifyUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="User_Interface\ChartsUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="User_Interface\ChartsUI.Designer.cs">
+      <DependentUpon>ChartsUI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="User_Interface\LibraryUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="User_Interface\LibraryUI.Designer.cs">
+      <DependentUpon>LibraryUI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="User_Interface\MainWindowUI.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="User_Interface\MainWindowUI.Designer.cs">
+      <DependentUpon>MainWindowUI.cs</DependentUpon>
     </Compile>
     <Compile Include="User_Interface\ProgressDialog.cs">
       <SubType>Form</SubType>
@@ -101,11 +128,11 @@
     <Compile Include="User_Interface\LoginUI.Designer.cs">
       <DependentUpon>LoginUI.cs</DependentUpon>
     </Compile>
-    <Compile Include="User_Interface\MainMenuUI.cs">
+    <Compile Include="User_Interface\HomeUI.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="User_Interface\MainMenuUI.Designer.cs">
-      <DependentUpon>MainMenuUI.cs</DependentUpon>
+    <Compile Include="User_Interface\HomeUI.Designer.cs">
+      <DependentUpon>HomeUI.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -131,6 +158,15 @@
     <EmbeddedResource Include="User_Interface\AdminUI_ModifyUser.resx">
       <DependentUpon>AdminUI_ModifyUser.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="User_Interface\ChartsUI.resx">
+      <DependentUpon>ChartsUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="User_Interface\LibraryUI.resx">
+      <DependentUpon>LibraryUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="User_Interface\MainWindowUI.resx">
+      <DependentUpon>MainWindowUI.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="User_Interface\ProgressDialog.resx">
       <DependentUpon>ProgressDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -140,8 +176,8 @@
     <EmbeddedResource Include="User_Interface\LoginUI.resx">
       <DependentUpon>LoginUI.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="User_Interface\MainMenuUI.resx">
-      <DependentUpon>MainMenuUI.cs</DependentUpon>
+    <EmbeddedResource Include="User_Interface\HomeUI.resx">
+      <DependentUpon>HomeUI.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

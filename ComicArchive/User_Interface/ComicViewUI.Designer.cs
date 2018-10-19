@@ -38,9 +38,15 @@
             this.panelComicScreen = new System.Windows.Forms.Panel();
             this.picBxComicScreen = new System.Windows.Forms.PictureBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.cmbBxBookmark = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.btnBookmark = new System.Windows.Forms.Button();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.btnRemBookmark = new System.Windows.Forms.Button();
             this.panelComicScreen.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picBxComicScreen)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnGoToFirst
@@ -51,7 +57,7 @@
             this.btnGoToFirst.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnGoToFirst.Location = new System.Drawing.Point(3, 3);
             this.btnGoToFirst.Name = "btnGoToFirst";
-            this.btnGoToFirst.Size = new System.Drawing.Size(172, 95);
+            this.btnGoToFirst.Size = new System.Drawing.Size(134, 95);
             this.btnGoToFirst.TabIndex = 1;
             this.btnGoToFirst.Text = "|<";
             this.btnGoToFirst.UseVisualStyleBackColor = true;
@@ -63,9 +69,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnGoToLast.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnGoToLast.Location = new System.Drawing.Point(537, 3);
+            this.btnGoToLast.Location = new System.Drawing.Point(423, 3);
             this.btnGoToLast.Name = "btnGoToLast";
-            this.btnGoToLast.Size = new System.Drawing.Size(172, 95);
+            this.btnGoToLast.Size = new System.Drawing.Size(134, 95);
             this.btnGoToLast.TabIndex = 2;
             this.btnGoToLast.Text = ">|";
             this.btnGoToLast.UseVisualStyleBackColor = true;
@@ -77,9 +83,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnGoToNext.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnGoToNext.Location = new System.Drawing.Point(359, 3);
+            this.btnGoToNext.Location = new System.Drawing.Point(283, 3);
             this.btnGoToNext.Name = "btnGoToNext";
-            this.btnGoToNext.Size = new System.Drawing.Size(172, 95);
+            this.btnGoToNext.Size = new System.Drawing.Size(134, 95);
             this.btnGoToNext.TabIndex = 3;
             this.btnGoToNext.Text = ">";
             this.btnGoToNext.UseVisualStyleBackColor = true;
@@ -91,9 +97,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.btnGoToPrevious.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnGoToPrevious.Location = new System.Drawing.Point(181, 3);
+            this.btnGoToPrevious.Location = new System.Drawing.Point(143, 3);
             this.btnGoToPrevious.Name = "btnGoToPrevious";
-            this.btnGoToPrevious.Size = new System.Drawing.Size(172, 95);
+            this.btnGoToPrevious.Size = new System.Drawing.Size(134, 95);
             this.btnGoToPrevious.TabIndex = 4;
             this.btnGoToPrevious.Text = "<";
             this.btnGoToPrevious.UseVisualStyleBackColor = true;
@@ -105,7 +111,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblPageNumber.AutoSize = true;
-            this.lblPageNumber.Location = new System.Drawing.Point(715, 0);
+            this.lblPageNumber.Location = new System.Drawing.Point(563, 0);
             this.lblPageNumber.Name = "lblPageNumber";
             this.lblPageNumber.Size = new System.Drawing.Size(194, 101);
             this.lblPageNumber.TabIndex = 5;
@@ -117,7 +123,7 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblTitle.AutoSize = true;
-            this.lblTitle.Location = new System.Drawing.Point(915, 0);
+            this.lblTitle.Location = new System.Drawing.Point(763, 0);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(194, 101);
             this.lblTitle.TabIndex = 6;
@@ -128,9 +134,9 @@
             this.btnFinish.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnFinish.Location = new System.Drawing.Point(1115, 3);
+            this.btnFinish.Location = new System.Drawing.Point(963, 3);
             this.btnFinish.Name = "btnFinish";
-            this.btnFinish.Size = new System.Drawing.Size(173, 95);
+            this.btnFinish.Size = new System.Drawing.Size(138, 95);
             this.btnFinish.TabIndex = 7;
             this.btnFinish.Text = "Finish Reading";
             this.btnFinish.UseVisualStyleBackColor = true;
@@ -142,20 +148,17 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panelComicScreen.Controls.Add(this.picBxComicScreen);
-            this.panelComicScreen.Location = new System.Drawing.Point(12, 12);
+            this.panelComicScreen.Location = new System.Drawing.Point(33, 12);
             this.panelComicScreen.Name = "panelComicScreen";
-            this.panelComicScreen.Size = new System.Drawing.Size(1267, 679);
+            this.panelComicScreen.Size = new System.Drawing.Size(1037, 688);
             this.panelComicScreen.TabIndex = 8;
             // 
             // picBxComicScreen
             // 
-            this.picBxComicScreen.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.picBxComicScreen.Location = new System.Drawing.Point(13, 12);
-            this.picBxComicScreen.MinimumSize = new System.Drawing.Size(1239, 652);
+            this.picBxComicScreen.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.picBxComicScreen.Location = new System.Drawing.Point(0, 0);
             this.picBxComicScreen.Name = "picBxComicScreen";
-            this.picBxComicScreen.Size = new System.Drawing.Size(1239, 652);
+            this.picBxComicScreen.Size = new System.Drawing.Size(1037, 688);
             this.picBxComicScreen.TabIndex = 0;
             this.picBxComicScreen.TabStop = false;
             // 
@@ -181,8 +184,71 @@
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1291, 101);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1104, 101);
             this.tableLayoutPanel1.TabIndex = 9;
+            // 
+            // cmbBxBookmark
+            // 
+            this.cmbBxBookmark.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cmbBxBookmark.FormattingEnabled = true;
+            this.cmbBxBookmark.Location = new System.Drawing.Point(3, 210);
+            this.cmbBxBookmark.Name = "cmbBxBookmark";
+            this.cmbBxBookmark.Size = new System.Drawing.Size(181, 21);
+            this.cmbBxBookmark.TabIndex = 10;
+            this.cmbBxBookmark.SelectedIndexChanged += new System.EventHandler(this.cmbBxBookmark_SelectedIndexChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label1.Location = new System.Drawing.Point(3, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(181, 207);
+            this.label1.TabIndex = 11;
+            this.label1.Text = "Go To Bookmark";
+            // 
+            // btnBookmark
+            // 
+            this.btnBookmark.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnBookmark.Enabled = false;
+            this.btnBookmark.Location = new System.Drawing.Point(3, 417);
+            this.btnBookmark.Name = "btnBookmark";
+            this.btnBookmark.Size = new System.Drawing.Size(181, 201);
+            this.btnBookmark.TabIndex = 12;
+            this.btnBookmark.Text = "Bookmark this page";
+            this.btnBookmark.UseVisualStyleBackColor = true;
+            this.btnBookmark.Click += new System.EventHandler(this.btnBookmark_Click);
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 1;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Controls.Add(this.btnRemBookmark, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.btnBookmark, 0, 2);
+            this.tableLayoutPanel2.Controls.Add(this.label1, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.cmbBxBookmark, 0, 1);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Right;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(1104, 0);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 4;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(187, 828);
+            this.tableLayoutPanel2.TabIndex = 8;
+            // 
+            // btnRemBookmark
+            // 
+            this.btnRemBookmark.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnRemBookmark.Enabled = false;
+            this.btnRemBookmark.Location = new System.Drawing.Point(3, 624);
+            this.btnRemBookmark.Name = "btnRemBookmark";
+            this.btnRemBookmark.Size = new System.Drawing.Size(181, 201);
+            this.btnRemBookmark.TabIndex = 13;
+            this.btnRemBookmark.Text = "Remove Bookmark";
+            this.btnRemBookmark.UseVisualStyleBackColor = true;
+            this.btnRemBookmark.Click += new System.EventHandler(this.btnRemBookmark_Click);
             // 
             // ComicView
             // 
@@ -191,6 +257,10 @@
             this.ClientSize = new System.Drawing.Size(1291, 828);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.panelComicScreen);
+            this.Controls.Add(this.tableLayoutPanel2);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(1307, 867);
             this.Name = "ComicView";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -201,6 +271,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.picBxComicScreen)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -216,5 +288,10 @@
         private System.Windows.Forms.Panel panelComicScreen;
         private System.Windows.Forms.PictureBox picBxComicScreen;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.ComboBox cmbBxBookmark;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button btnBookmark;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.Button btnRemBookmark;
     }
 }

@@ -11,6 +11,7 @@ using System.Diagnostics;
 using ComicArchive.Data_Access;
 using System.IO;
 using ComicArchive.Business_Logic;
+using ComicArchive.Application_Interface;
 
 namespace ComicArchive.User_Interface
 {
@@ -19,7 +20,7 @@ namespace ComicArchive.User_Interface
         //data members
         private Login ui_login;
         private Admin loggedAdmin;
-        private ComicLibraryAccess accountReader;
+        private ExtendedAccountAccess accountReader;
         private ComicAccess comicReader;
         private Admin[] adminAccts;
         private User[] userAccts;
@@ -33,14 +34,14 @@ namespace ComicArchive.User_Interface
         private BackgroundWorker bgWorker;
         bool backgroundProcessDone;
 
-        public AdminUI(Login ui_login, Business_Logic.Admin admin)
+        public AdminUI(Login ui_login, Admin admin)
         {
             InitializeComponent();
             //set data members
             this.ui_login = ui_login;
             this.loggedAdmin = admin;
             lblAdminName.Text = admin.Username;
-            accountReader = new ComicLibraryAccess(accountFileName);
+            accountReader = new ExtendedAccountAccess(accountFileName);
             comicReader = new ComicAccess(cbRecordsFileName);
             backgroundProcessDone = true;
 
@@ -74,16 +75,15 @@ namespace ComicArchive.User_Interface
         {
             Trace.WriteLine("ChangePassword event triggered!\nAdmin Password changed! " + loggedAdmin.Password + " -> " + e.password);
             loggedAdmin.Password = e.password;
-            accountReader.SetAccount(loggedAdmin.Username, loggedAdmin.Password);
-            accountReader.WriteAdminAccount();
+            accountReader.WriteAdminAccount(loggedAdmin.Username, loggedAdmin.Password);
         }
         //2
         public delegate void AddUserHandler(object sender, AddUserArgs e);
 
         public class AddUserArgs : EventArgs
         {
-            public Business_Logic.User NewUser { get; set; }
-            public Business_Logic.Admin NewAdmin { get; set; }
+            public User NewUser { get; set; }
+            public Admin NewAdmin { get; set; }
         }
 
         public void EventTrigger_AddUser(object source, AddUserArgs e)
@@ -109,7 +109,7 @@ namespace ComicArchive.User_Interface
 
         public class UsernameChangedArgs : EventArgs
         {
-            public Business_Logic.Admin adminUser { get; set; }
+            public Admin adminUser { get; set; }
         }
 
         public void EventTrigger_UsernameChanged(object source, UsernameChangedArgs e)
@@ -117,14 +117,13 @@ namespace ComicArchive.User_Interface
             if (e.adminUser != null)
             {
                 Trace.WriteLine("UsernameChanged event triggered!\nAdmin Username changed! " + loggedAdmin.Username + " -> " + e.adminUser.Username);
-                accountReader.SetAccount(e.adminUser.Username, e.adminUser.Password);
 
                 //refresh values to reflect changes
-                loggedAdmin = accountReader.GetAdminAccount();
+                loggedAdmin = accountReader.GetAdminAccount(e.adminUser.Username, e.adminUser.Password);
                 lblAdminName.Text = loggedAdmin.Username;
 
                 //refresh admin accounts list to reflect changes
-                adminAccts = accountReader.GetAllAdminAccounts();
+                adminAccts = accountReader.ReadAllAdminAccounts();
             }
             else
             {
@@ -137,7 +136,7 @@ namespace ComicArchive.User_Interface
 
         public class UserModifiedArgs : EventArgs
         {
-            public Business_Logic.User modifiedUser { get; set; }
+            public User modifiedUser { get; set; }
         }
 
         public void EventTrigger_UserModified(object source, UserModifiedArgs e)
@@ -184,8 +183,8 @@ namespace ComicArchive.User_Interface
         #region Users Tab
         private void UserInfo_Refresh()
         {
-            adminAccts = accountReader.GetAllAdminAccounts();
-            userAccts = accountReader.GetAllUserAccounts();
+            adminAccts = accountReader.ReadAllAdminAccounts();
+            userAccts = accountReader.ReadAllUserAccounts();
             lstViewUsers_FillWithSearchCriteria("", true, false);
             lblUserCount.Text = "Total Number of Users: " + accountReader.Count.ToString();
         }
@@ -434,8 +433,7 @@ namespace ComicArchive.User_Interface
             if (response == DialogResult.Yes)
             {
                 //remove user
-                accountReader.SetAccount(selectedUsername, selectedPassword);
-                if (accountReader.RemoveAccount())
+                if (accountReader.RemoveAccount(selectedUsername, selectedPassword))
                 {
                     MessageBox.Show("User successfully removed.", "Remove User", MessageBoxButtons.OK,
                         MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
@@ -565,9 +563,9 @@ namespace ComicArchive.User_Interface
                 {
                     foreach (var cb in comicBooks)
                     {
-                        //empty authors, don't bother checking, add all items to control
+                        //empty authors, don't bother checking, don't add
                         if (cb.ComicAuthors != null &&
-                            cb.ComicAuthors.Where(author => author.ToLower().Contains(searchVal.ToLower())).Count() != 0)
+                            cb.ComicAuthors.Any(author => author.ToLower().Contains(searchVal.ToLower())))
                         {
                             lstViewAvailableComics.Items.Add(Path.GetFileName(cb.GetArchivePath()));
                         }
@@ -582,7 +580,10 @@ namespace ComicArchive.User_Interface
                 {
                     foreach (var cb in comicBooks)
                     {
-                        if (cb.ComicGenre == searchVal)
+
+                        //empty genres, don't bother checking, don't add
+                        if (cb.ComicGenres != null &&
+                            cb.ComicGenres.Any(genre => genre == searchVal))
                         {
                             lstViewAvailableComics.Items.Add(Path.GetFileName(cb.GetArchivePath()));
                         }
@@ -593,7 +594,9 @@ namespace ComicArchive.User_Interface
                 {
                     foreach (var cb in comicBooks)
                     {
-                        if (cb.ComicGenre.ToLower().Contains(searchVal.ToLower()))
+                        //empty genres, don't bother checking, don't add
+                        if (cb.ComicGenres != null &&
+                            cb.ComicGenres.Any(genre => genre.ToLower().Contains(searchVal.ToLower())))
                         {
                             lstViewAvailableComics.Items.Add(Path.GetFileName(cb.GetArchivePath()));
                         }
@@ -684,7 +687,7 @@ namespace ComicArchive.User_Interface
                 string selectedItem = lstViewAvailableComics.Items[selectedIndex].Text;
 
                 string cbFullPath = Path.GetFullPath(Path.Combine(@"Resources", @"comicbooks", selectedItem));
-                Business_Logic.ComicBook selectedComic;
+                ComicBook selectedComic;
                 selectedComic = comicReader.GetComicBook(cbFullPath);
 
                 //enable textboxes/labels
@@ -738,7 +741,7 @@ namespace ComicArchive.User_Interface
             lblAvgRating.Visible = enabled;
         }
 
-        private void ComicInfo_SetValues(Business_Logic.ComicBook cb)
+        private void ComicInfo_SetValues(ComicBook cb)
         {
             txtBxComicTitle.Text = cb.ComicTitle;
             txtBxComicSubTitle.Text = cb.ComicSubTitle;
@@ -753,11 +756,17 @@ namespace ComicArchive.User_Interface
                 txtBxAuthors.Text = string.Join(",", cb.ComicAuthors);
             }
 
-            txtBxGenre.Text = cb.ComicGenre;
+            if (cb.ComicGenres != null)
+            {
+                txtBxGenre.ResetText();
+                txtBxGenre.Text = string.Join(",", cb.ComicGenres);
+            }
+
             txtBxPublisher.Text = cb.Publisher;
 
             lblViewCount.Text = "# of Views: " + cb.ViewCount.ToString();
             lblAvgRating.Text = "Average Rating: " + cb.Rating.ToString();
+            lblNumPages.Text = "# of Pages: "+ cb.PageCount.ToString() + " Pages";
 
             if (picBxComicCover.Image != null)
                 picBxComicCover.Image.Dispose();
@@ -805,8 +814,20 @@ namespace ComicArchive.User_Interface
                 return;
             }
 
-            //no need to check genre/publisher, they can be empty 
-            string genre = txtBxGenre.Text;
+            //genres must be correctly separated, it can be empty
+            string[] genres = txtBxGenre.Text.Split(',');
+
+            genres = genres.Select(s => s.Trim()).ToArray();
+
+            if (txtBxGenre.Text.Trim() != "" &&
+                genres.Any(author => author.Length == 0))
+            {
+                MessageBox.Show("Null genres are not allowed.", "Input Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1);
+                return;
+            }
+
+            //no need to check publisher, they can be empty 
             string publisher = txtBxPublisher.Text;
 
             //confirm username change
@@ -831,7 +852,7 @@ namespace ComicArchive.User_Interface
                 selectedComic.ComicDateReleased = dateRel;
                 selectedComic.ComicSynopsis = synopsis;
                 selectedComic.ComicAuthors = authors;
-                selectedComic.ComicGenre = genre;
+                selectedComic.ComicGenres = genres;
                 selectedComic.Publisher = publisher;
 
                 //write to file

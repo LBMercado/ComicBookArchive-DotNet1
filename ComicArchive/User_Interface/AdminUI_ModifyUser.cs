@@ -93,8 +93,7 @@ namespace ComicArchive.User_Interface
                     return;
                 }
                 //input checking
-                acctReader.SetAccount(modifiedUsername, modifiedPassword);
-                if (acctReader.AccountExists() && modifiedUsername != thisUser.Username)
+                if (acctReader.AccountExists(modifiedUsername) && modifiedUsername != thisUser.Username)
                 {
                     lbl_Info.Text = "That username is already used.";
                 }
@@ -117,8 +116,7 @@ namespace ComicArchive.User_Interface
             if (userHasBeenModified)
             {
                 //write changes to XML accounts file
-                acctReader.SetAccount(txtBxName.Text.Trim(), txtBxPassword.Text.Trim());
-                acctReader.UpdateAccount(thisUser.Id);
+                acctReader.UpdateAccount(thisUser.Id, txtBxName.Text.Trim(), txtBxPassword.Text.Trim());
                 //update the user
                 thisUser = acctReader.GetUserAccount(thisUser.Id);
                 userHasBeenModified = false;

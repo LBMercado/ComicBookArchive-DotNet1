@@ -8,6 +8,7 @@ using System.Xml.XPath;
 using System.Diagnostics;
 using System.IO;
 using ComicArchive.Business_Logic;
+using ComicArchive.Exceptions;
 
 namespace ComicArchive.Data_Access
 {
@@ -17,7 +18,8 @@ namespace ComicArchive.Data_Access
         //May include: account access, modification, verification, and encryption properties
 
         //data members
-        private string username, password;
+        protected User[] userList;
+        protected Admin[] adminList;
         private int identifier;
         // identifier:
         // first 4 digits = year
@@ -25,6 +27,7 @@ namespace ComicArchive.Data_Access
 
         /// <summary>
         /// Provides a means of setting and accessing an XML accounts file.
+        /// Only writes/reads/modifies the username, password, and id members for the User/Admin
         /// </summary>
         /// <param name="acctfilePath">
         /// Path of the XML accounts file.
@@ -48,16 +51,23 @@ namespace ComicArchive.Data_Access
 
                 //count total number of accounts
                 Count = UserCount + AdminCount;
+
+                //fill the user and admin lists
+                userList = ReadAllUserAccounts();
+                adminList = ReadAllAdminAccounts();
             }
             else
             {
                 Trace.WriteLine("Directory with name = " + "<" + root + ">" + " does not exist, trying to create directory.");
                 try
                 {
+                    Count = UserCount = AdminCount = 0;
                     CreateDataDirectory();
                     //create super admin
                     CreateSuperAdmin();
-                    Count = 0;
+
+                    //fill the admin list
+                    adminList = ReadAllAdminAccounts();
                 }
                 catch (FileNotFoundException exc)
                 {
@@ -65,9 +75,6 @@ namespace ComicArchive.Data_Access
                     throw exc;
                 }
             }
-
-            username = "";
-            password = "";
         }
 
         /// <summary>
@@ -76,295 +83,194 @@ namespace ComicArchive.Data_Access
         /// </summary>
         public new void CreateDataDirectory()
         {
-            XDocument xdocument;
-            Directory.CreateDirectory(root);
-
-            xdocument = new XDocument(new XElement("Accounts"));
-            xdocument.Save(filePath);
-        }
-
-        /// <summary>
-        /// Provides a means of setting and accessing an XML accounts file.
-        /// </summary>
-        /// <param name="acctfilePath">
-        /// Path of the XML accounts file.
-        /// </param>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
-        /// <exception cref="FileNotFoundException"></exception>
-        public AccountAccess(string acctfilePath, string username, string password) : base(acctfilePath)
-        {
-            identifier = DateTime.Now.Year;
-            //count number of accounts in XML file
-            if (PathIsValid())
+            if (!PathIsValid())
             {
-                XDocument xdocument = XDocument.Load(filePath);
+                XDocument xdocument;
+                Directory.CreateDirectory(root);
 
-                //count number of user accounts (excluding admins)
-                Func<XElement, bool> isUserId = delegate (XElement id) { return int.Parse(id.Value) / (int)Math.Pow(10, 6) != 1000; };
-                UserCount = xdocument.XPathSelectElements("//ID").Count(isUserId);
-
-                //count number of admin accounts
-                Func<XElement, bool> isAdminId = delegate (XElement id) { return int.Parse(id.Value) / (int)Math.Pow(10, 6) == 1000; };
-                AdminCount = xdocument.XPathSelectElements("//ID").Count(isAdminId);
-
-                //count total number of accounts
-                Count = UserCount + AdminCount;
+                xdocument = new XDocument(new XElement("Accounts"));
+                xdocument.Save(filePath);
             }
-            else
-            {
-                Trace.WriteLine("Directory with name = " + "<" + root + ">" + " does not exist, trying to create directory.");
-                try
-                {
-                    CreateDataDirectory();
-                    //create super admin
-                    CreateSuperAdmin();
-                    Count = 0;
-                }
-                catch (FileNotFoundException exc)
-                {
-                    Trace.WriteLine("Set Path = " + "<" + filePath + ">" + " is invalid, cannot proceed with account verification.");
-                    throw exc;
-                }
-            }
-
-            // id format:
-            // first 4 digits = year
-            // last 6 digits = account number
-            this.username = username;
-            this.password = username;
         }
 
         /// <summary>
-        /// Set the account credentials.
-        /// </summary>
-        /// <param name="username"></param>
-        /// <param name="password"></param>
-        public void SetAccount(string username, string password)
-        {
-            this.username = username;
-            this.password = password;
-        }
-
-        /// <summary>
-        /// Verify if the account is already existing in the XML accounts file.
+        /// Verify if the account is already existing in the XML accounts file
+        /// based on the given username
         /// </summary>
         /// <returns>
         /// true if it exists, otherwise, it returns false.
         /// </returns>
-        /// <exception cref="FileNotFoundException"></exception>
-        public bool AccountExists()
+        public bool AccountExists(string username)
         {
-            //check if path specified exists, throw an error if it is not valid
-            if (PathIsValid())
-            {
-                XDocument xDocument = XDocument.Load(filePath);
-
-                foreach (XElement account in xDocument.Descendants("Account"))
-                {
-                    //get first element
-                    XElement userNameRead = account.Element("Username");
-                    if (userNameRead.Value == username)
-                    {
-                        return true;
-                    }
-                }
-                return false;
-            }
-            else
-            {
-                Trace.WriteLine("Set Path = " + "<" + filePath + ">" + " is invalid, cannot proceed with account verification.");
-                FileNotFoundException exc = new FileNotFoundException
-                    (
-                    "Set Path = " + "<" + filePath + ">" + " is invalid, cannot proceed with account verification."
-                    );
-                throw exc;
-            }
+            return userList.Any(user => user.Username == username) ||
+                adminList.Any(admin => admin.Username == username);
         }
+
         /// <summary>
-        /// Verify if the account username and password matches an existing account in the XML accounts file.
+        /// Verify if the account is already existing in the XML accounts file
+        /// based on the given id
+        /// </summary>
+        /// <returns>
+        /// true if it exists, otherwise, it returns false.
+        /// </returns>
+        public bool AccountExists(int id)
+        {
+            //check in userList if id exists
+            return userList.Any(user => user.Id == id) ||
+                adminList.Any(admin => admin.Id == id);
+        }
+
+        /// <summary>
+        /// Verify if the account username and password matches an existing account in the XML accounts file
+        /// based on the given username and password
         /// </summary>
         /// <returns>
         /// true if the set username and password have an exact match, otherwise, false
         /// </returns>
-        public bool IsValidAccount()
+        public bool IsValidAccount(string username, string password)
         {
-            //check if path specified exists, throw an error if it is not valid
-            if (PathIsValid())
+            //check in user list first if username exists
+            if (userList.Any(user => user.Username == username))
             {
-                XDocument xDocument = XDocument.Load(filePath);
+                var account = userList.Where(user => user.Username == username).Single();
 
-                foreach (XElement account in xDocument.Descendants("Account"))
+                //check if password of user is a match
+                if (account.Password == password)
                 {
-                    //get required elements
-                    XElement userNameRead = account.Element("Username");
-                    XElement passWordRead = account.Element("Password");
-                    if (userNameRead.Value == username &&
-                        passWordRead.Value == password)
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            //must be an admin, check in admin list
+            else
+            {
+                if (adminList.Any(admin => admin.Username == username))
+                {
+                    var adminAccount = adminList.Where(admin => admin.Username == username).Single();
+                    //else check if the password matches then decide from there
+                    if (adminAccount.Password == password)
                     {
                         return true;
                     }
-                }
-                return false;
-            }
-            else
-            {
-                Trace.WriteLine("Set Path = " + "<" + filePath + ">" + " is invalid, cannot proceed with account verification.");
-                FileNotFoundException exc = new FileNotFoundException
-                    (
-                    "Set Path = " + "<" + filePath + ">" + " is invalid, cannot proceed with account verification."
-                    );
-                throw exc;
-            }
-        }
-
-        /// <summary>
-        /// Gets the actual account of the set account
-        /// </summary>
-        /// <returns>
-        /// the actual admin if successful, null otherwise
-        /// </returns>
-        public User GetUserAccount()
-        {
-            //check if path specified exists, throw an error if it is not valid
-            if (PathIsValid())
-            {
-                XDocument xDocument = XDocument.Load(filePath);
-
-                foreach (XElement account in xDocument.Descendants("Account"))
-                {
-                    //get required elements
-                    XElement idRead = account.Element("ID");
-                    XElement userNameRead = account.Element("Username");
-                    XElement passWordRead = account.Element("Password");
-
-                    //check if id does not have 1000 as its first 4 digits
-                    //the 1000 indicates an admin, any other will be a user
-                    if (userNameRead.Value == username &&
-                        passWordRead.Value == password &&
-                        idRead.Value.Substring(0, 4) != "1000")
+                    else
                     {
-                        User user = new User(Convert.ToInt32(idRead.Value));
-                        {
-                            user.Username = userNameRead.Value;
-                            user.Password = passWordRead.Value;
-                        }
-                        return user;
+                        return false;
                     }
                 }
-                return null;
-            }
-            else
-            {
-                Trace.WriteLine("Set Path = " + "<" + filePath + ">" + " is invalid, cannot proceed with account verification.");
-                FileNotFoundException exc = new FileNotFoundException
-                    (
-                    "Set Path = " + "<" + filePath + ">" + " is invalid, cannot proceed with account verification."
-                    );
-                throw exc;
+                //if still null, then it does not exist, it is an invalid account
+                else
+                {
+                    return false;
+                }
             }
         }
 
         /// <summary>
-        /// Gets the User account associated with the given User id
+        /// Verify if the account username and password matches an Admin account in the XML accounts file
+        /// based on the given username and password
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <returns>
+        /// true if the given username and password have an exact Admin account match, otherwise, false
+        /// </returns>
+        public bool IsAdminAccount(string username, string password)
+        {
+            //check if in admin list
+            if (adminList.Any(admin => admin.Username == username))
+            {
+                var adminAccount = adminList.Where(admin => admin.Username == username).Single();
+                //else check if the password matches then decide from there
+                if (adminAccount.Password == password)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            //if still null, then it does not exist, it is an invalid account
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets the User instance in the XML accounts file
+        /// based on the given username and password
         /// </summary>
         /// <returns>
-        /// User object if successful, null otherwise
+        /// User object if matching User username and password found, null otherwise
+        /// </returns>
+        public User GetUserAccount(string username, string password)
+        {
+            if (IsValidAccount(username, password))
+            {
+                return userList.Where(user => user.Username == username).SingleOrDefault();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets the User instance in the XML accounts file
+        /// based on the given id
+        /// </summary>
+        /// <returns>
+        /// User object if matching User ID found, null otherwise
         /// </returns>
         /// <exception cref="FileNotFoundException"></exception>
         public User GetUserAccount(int id)
         {
-            //check if path specified exists, throw an error if it is not valid
-            if (PathIsValid())
-            {
-                XDocument xDocument = XDocument.Load(filePath);
-
-                foreach (XElement account in xDocument.Descendants("Account"))
-                {
-                    //get required elements
-                    XElement idRead = account.Element("ID");
-                    XElement userNameRead = account.Element("Username");
-                    XElement passWordRead = account.Element("Password");
-
-                    //check if id is a match
-                    if (idRead.Value == id.ToString())
-                    {
-                        User user = new User(Convert.ToInt32(idRead.Value));
-                        {
-                            user.Username = userNameRead.Value;
-                            user.Password = passWordRead.Value;
-                        }
-                        return user;
-                    }
-                }
-                return null;
-            }
-            else
-            {
-                Trace.WriteLine("Set Path = " + "<" + filePath + ">" + " is invalid, cannot proceed with account verification.");
-                FileNotFoundException exc = new FileNotFoundException
-                    (
-                    "Set Path = " + "<" + filePath + ">" + " is invalid, cannot proceed with account verification."
-                    );
-                throw exc;
-            }
+            return userList.Where(user => user.Id == id).SingleOrDefault();
         }
 
         /// <summary>
-        /// Gets the Admin account associated with the set account
+        /// Gets the Admin instance in the XML accounts file
+        /// based on the given username and password
         /// </summary>
         /// <returns>
-        /// the actual admin if successfull, null otherwise
+        /// Admin object if matching Admin ID found, null otherwise
         /// </returns>
-        public Admin GetAdminAccount()
+        public Admin GetAdminAccount(string username, string password)
         {
-            //check if path specified exists, throw an error if it is not valid
-            if (PathIsValid())
+            if (IsValidAccount(username, password))
             {
-                XDocument xDocument = XDocument.Load(filePath);
-
-                foreach (XElement account in xDocument.Descendants("Account"))
-                {
-                    //get required elements
-                    XElement idRead = account.Element("ID");
-                    XElement userNameRead = account.Element("Username");
-                    XElement passWordRead = account.Element("Password");
-
-                    //check if id has 1000 as its first 4 digits
-                    //the 1000 indicates an admin, any other will be a user
-                    if (userNameRead.Value == username &&
-                        passWordRead.Value == password &&
-                        idRead.Value.Substring(0, 4) == "1000")
-                    {
-                        Admin admin = new Admin(Convert.ToInt32(idRead.Value));
-                        {
-                            admin.Username = userNameRead.Value;
-                            admin.Password = passWordRead.Value;
-                        }
-                        return admin;
-                    }
-                }
-                return null;
+                return adminList.Where(admin => admin.Username == username).SingleOrDefault();
             }
             else
             {
-                Trace.WriteLine("Set Path = " + "<" + filePath + ">" + " is invalid, cannot proceed with account verification.");
-                FileNotFoundException exc = new FileNotFoundException
-                    (
-                    "Set Path = " + "<" + filePath + ">" + " is invalid, cannot proceed with account verification."
-                    );
-                throw exc;
+                return null;
             }
         }
 
         /// <summary>
-        /// Writes the set user account to the XML accounts file.
-        /// Updates the account credentials except the username if it already exists.
+        /// Gets the Admin instance in the XML accounts file
+        /// based on the given id
+        /// </summary>
+        /// <returns>
+        /// Admin object if matching Admin ID found, null otherwise
+        /// </returns>
+        public Admin GetAdminAccount(int id)
+        {
+            return adminList.Where(admin => admin.Id == id).SingleOrDefault();
+        }
+
+        /// <summary>
+        /// Writes a User account to the XML accounts file
+        /// based on the given username and password.
+        /// Updates the password if username already exists.
         /// </summary>
         /// <exception cref="FileNotFoundException"></exception>
-        public void WriteUserAccount()
+        public void WriteUserAccount(string username, string password)
         {
-            //If the username already exists, this will overwrite the existing password of that account
             if (PathIsValid())
             {
                 XDocument xDocument = XDocument.Load(filePath);
@@ -397,6 +303,9 @@ namespace ComicArchive.Data_Access
                 xDocument.Save(filePath);
                 UserCount++;
                 Count++;
+
+                //reload user list to reflect changes
+                userList = ReadAllUserAccounts();
             }
             else
             {
@@ -410,11 +319,12 @@ namespace ComicArchive.Data_Access
         }
 
         /// <summary>
-        /// Writes the set admin account to the XML accounts file.
-        /// Updates the account credentials except the username if it already exists.
+        /// Writes an Admin account to the XML accounts file
+        /// based on the given username and password
+        /// Updates the password if username already exists.
         /// </summary>
         /// <exception cref="FileNotFoundException"></exception>
-        public void WriteAdminAccount()
+        public void WriteAdminAccount(string username, string password)
         {
             //If the username already exists, this will overwrite the existing password of that account
             if (PathIsValid())
@@ -449,6 +359,9 @@ namespace ComicArchive.Data_Access
                 xDocument.Save(filePath);
                 AdminCount++;
                 Count++;
+
+                //reload admin list to reflect changes
+                adminList = ReadAllAdminAccounts();
             }
             else
             {
@@ -463,18 +376,20 @@ namespace ComicArchive.Data_Access
         }
 
         /// <summary>
-        /// Removes the set user account from the XML accounts file.
+        /// Removes the User/Admin account in the XML accounts file
+        /// based on the given username and password
         /// </summary>
         /// <returns>
-        /// true if successful, false otherwise
+        /// true if successful, false if invalid combination of username and password
         /// </returns>
         /// <exception cref="FileNotFoundException"></exception>
-        public bool RemoveAccount()
+        /// <exception cref="UserDoesNotExistException"></exception>
+        public bool RemoveAccount(string username, string password)
         {
             if (PathIsValid())
             {
                 //delete only if valid credentials
-                if (IsValidAccount())
+                if (IsValidAccount(username, password))
                 {
                     XDocument xDocument = XDocument.Load(filePath);
 
@@ -496,10 +411,14 @@ namespace ComicArchive.Data_Access
                             if (idRead.Value.Substring(0, 4) == "1000")
                             {
                                 AdminCount--;
+                                //reload user list to reflect changes
+                                userList = ReadAllUserAccounts();
                             }
                             else
                             {
                                 UserCount--;
+                                //reload admin list to reflect changes
+                                adminList = ReadAllAdminAccounts();
                             }
                             Count--;
                             return true;
@@ -508,7 +427,14 @@ namespace ComicArchive.Data_Access
                     return false;
                 }
                 else
-                    return false;
+                {
+                    Trace.WriteLine("User/Admin with username: <" + username + "> and password: <" + password +">, does not exist in the XML file.");
+                    UserDoesNotExistException exc = new UserDoesNotExistException
+                        (
+                        "User/Admin with username: <" + username + "> and password: <" + password + ">, does not exist in the XML file."
+                        );
+                    throw exc;
+                }
             }
             else
             {
@@ -522,15 +448,79 @@ namespace ComicArchive.Data_Access
         }
 
         /// <summary>
-        /// Updates the User account associated with the given ID in the XML accounts file using the set account
+        /// Removes the User/Admin account in the XML accounts file
+        /// based on the given id
         /// </summary>
-        /// <param name="userId">
-        /// id of the User to update
+        /// <returns>
+        ///  true if successful, false if invalid id
+        /// </returns>
+        /// <param name="id"></param>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="UserDoesNotExistException"></exception>
+        public bool RemoveAccount(int id)
+        {
+            if (PathIsValid())
+            {
+                XDocument xDocument = XDocument.Load(filePath);
+
+                foreach (XElement account in xDocument.Descendants("Account"))
+                {
+                    //get required elements
+                    XElement idRead = account.Element("ID");
+
+                    if (idRead.Value == id.ToString())
+                    {
+                        //remove top node <Account> that has this username
+                        account.Remove();
+                        xDocument.Save(filePath);
+
+                        //check if admin or user, decrement accordingly
+                        //check if id does not have 1000 as its first 4 digits
+                        //the 1000 indicates an admin, any other will be a user
+                        if (idRead.Value.Substring(0, 4) == "1000")
+                        {
+                            AdminCount--;
+                            //reload user list to reflect changes
+                            account.Remove();
+                            xDocument.Save(filePath);
+                            userList = ReadAllUserAccounts();
+                        }
+                        else
+                        {
+                            UserCount--;
+                            //reload admin list to reflect changes
+                            account.Remove();
+                            xDocument.Save(filePath);
+                            adminList = ReadAllAdminAccounts();
+                        }
+                        Count--;
+                        return true;
+                    }
+                }
+                return false;
+            }
+            else
+            {
+                Trace.WriteLine("Set Path = " + "<" + filePath + ">" + " is invalid. Cannot proceed with account removal.");
+                FileNotFoundException exc = new FileNotFoundException
+                    (
+                    "Set Path = " + "<" + filePath + ">" + " is invalid or set account does not exist.\nCannot proceed with account removal."
+                    );
+                throw exc;
+            }
+        }
+
+        /// <summary>
+        /// Updates the User/Admin account in the XML accounts file
+        /// based on the given id
+        /// </summary>
+        /// <param name="id">
+        /// id of the User/Admin to update
         /// </param>
         /// <returns>
         /// true if successful, false otherwise
         /// </returns>
-        public bool UpdateAccount(int userId)
+        public bool UpdateAccount(int id, string newUsername, string newPassword)
         {
             if (PathIsValid())
             {
@@ -544,10 +534,12 @@ namespace ComicArchive.Data_Access
                     XElement idRead = account.Element("ID");
 
                     //update account username and password with same userId
-                    if (idRead.Value == userId.ToString())
+                    if (idRead.Value == id.ToString())
                     {
-                        userNameRead.Value = username;
-                        passWordRead.Value = password;
+                        //must not replace super admin username
+                        if (userNameRead.Value != "admin_super")
+                            userNameRead.Value = newUsername;
+                        passWordRead.Value = newPassword;
                         xDocument.Save(filePath);
                         return true;
                     }
@@ -569,16 +561,10 @@ namespace ComicArchive.Data_Access
         /// This creates the super admin within the accounts file.
         /// </summary>
         private void CreateSuperAdmin()
-        {
-            string oldUsername = username;
-            string oldPassword = password;
-            
-            username = "admin_super";
-            password = "letmein";
-            WriteAdminAccount();
-
-            username = oldUsername;
-            password = oldPassword;
+        {   
+            string super_username = "admin_super";
+            string super_password = "letmein";
+            WriteAdminAccount(super_username, super_password);
         }
 
         /// <summary>
@@ -587,11 +573,11 @@ namespace ComicArchive.Data_Access
         /// <returns>
         /// array of User objects
         /// </returns>
-        public User[] GetAllUserAccounts()
+        /// <exception cref="FileNotFoundException"></exception>
+        public User[] ReadAllUserAccounts()
         {
             if (PathIsValid())
             {
-
                 XDocument xDocument = XDocument.Load(filePath);
                 User[] userList = new User[UserCount];
                 int index = 0;
@@ -634,7 +620,7 @@ namespace ComicArchive.Data_Access
         /// <returns>
         /// array of Admin objects
         /// </returns>
-        public Admin[] GetAllAdminAccounts()
+        public Admin[] ReadAllAdminAccounts()
         {
             if (PathIsValid())
             {
@@ -675,15 +661,15 @@ namespace ComicArchive.Data_Access
         }
 
         /// <summary>
-        /// Get total number of accounts in the XML file
+        /// total number of accounts in the XML file
         /// </summary>
         public int Count { get; private set; }
         /// <summary>
-        /// Get number of admin accounts in the XML file
+        /// number of admin accounts in the XML file
         /// </summary>
         public int AdminCount { get; private set; }
         /// <summary>
-        /// Get number of user accounts in the XML file
+        /// number of user accounts in the XML file
         /// </summary>
         public int UserCount { get; private set; }
     }

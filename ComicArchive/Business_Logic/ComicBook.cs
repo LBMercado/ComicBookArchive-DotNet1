@@ -22,8 +22,9 @@ namespace ComicArchive.Business_Logic
             //set data members
             archivePath = comicPath = ComicTitle = ComicSubTitle = ComicIssue = "";
             ComicDateAdded = ComicDateReleased = DateTime.Now;
-            Publisher = ComicSynopsis = ComicGenre = "";
+            Publisher = ComicSynopsis = "";
             ComicAuthors = null;
+            ComicGenres = null;
             Rating = 0.0F;
             ViewCount = PageCount = 0;
         }
@@ -165,13 +166,14 @@ namespace ComicArchive.Business_Logic
         }
 
         /// <summary>
-        /// rates the comic book
+        /// rates the comic book, this takes the average of it and the current rating
+        /// if no one has rated it yet
         /// </summary>
         public void RateComicBook(float rating)
         {
             //succeeding ratings
             if (ViewCount > 1)
-                Rating = (Rating + rating) / ViewCount;
+                Rating = (Rating + rating) / 2;
             //first rating
             else
                 Rating = rating;
@@ -215,7 +217,7 @@ namespace ComicArchive.Business_Logic
         /// <summary>
         /// genre that the comic book belongs
         /// </summary>
-        public string ComicGenre { get; set; }
+        public string[] ComicGenres { get; set; }
 
         /// <summary>
         /// rating of the comic book
